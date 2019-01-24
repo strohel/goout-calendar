@@ -1,9 +1,48 @@
 FORMAT: 1A
+HOST: https://goout.net
 
-# GoOut
+# GoOut API
 
 Reverse-engineered documentation of goout.net API, as of 2019-01.
 
+## IDs
+
+GoOut uses numeric IDs for its entities (users, events, ...).
+
+In URLs, these IDs are encoded using a variant of a `base25` encoding:
+the alphabet is `a` to `y` (case-sensitive, only small letters allowed)
+meaning `0` to `24`, written in little-endian order.
+`aab = 0 * 25^0 + 0 * 25^1 + 1 * 25^2 = 625`.
+
 # Group Authentication
 
-TODO
+## GET /services/authentication/v1/state
+
+Needs authorization.
+
++ Response 200 (application/json)
+    + Attributes (Common Response Attributes)
+        + name (string)
+        + authenticated: false (boolean)
+
+## GET /services/authentication/v1/oauth/urls
+
+List URLs for SSO OAUTH providers.
+
++ Response 200 (application/json)
+    + Attributes (Common Response Attributes)
+        + facebook: https://www.facebook.com/dialog/oauth?client_id=124258840997748&redirect_uri=https%3A%2F%2Fgoout.net%2Fservices%2Fauthentication%2Fv1%2Foauth%2Ffacebook%2F&scope=public_profile%2Cemail%2Cuser_friends%2Cuser_link&request_type=code&auth_type=rerequest
+        + google: https://accounts.google.com/o/oauth2/auth?client_id=10847206449.apps.googleusercontent.com&response_type=code&scope=https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fuserinfo.profile+https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fuserinfo.email&redirect_uri=https%3A%2F%2Fgoout.net%2Fservices%2Fauthentication%2Fv1%2Foauth%2Fgoogle&state=security_token%3Dafdzdwhaiqolkwlxg%26url%3Dhttps%3A%2F%2Fgoout.net
+
+# Data Structures
+
+## Common Response Attributes (object)
+
++ status (enum[number])
+    + Members
+        + 200
+        + 401
++ message (enum[string])
+    + Members
+        + OK
+        + UNAUTHORIZED
