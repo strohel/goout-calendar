@@ -7,14 +7,92 @@ Reverse-engineered documentation of goout.net API, as of 2019-01.
 
 ## IDs
 
-GoOut uses numeric IDs for its entities (users, events, ...).
+GoOut uses numeric IDs for its entities (users, ss, ...).
 
 In URLs, these IDs are encoded using a variant of a `base25` encoding:
 the alphabet is `a` to `y` (case-sensitive, only small letters allowed)
 meaning `0` to `24`, written in little-endian order.
 `aab = 0 * 25^0 + 0 * 25^1 + 1 * 25^2 = 625`.
 
+# Group Legacy
+
+These endpoints seem to return HTML snippets.
+
+## GET /legacy/follow/calendarFor
+
++ Response 200 (application/json)
+    + Attributes (Common Response Attributes)
+
+## GET /legacy/follow/followsForProfile
+
++ Response 200 (application/json)
+    + Attributes (Common Response Attributes)
+
 # Group Authentication
+
+## GET /services/authentication/v1/accountExists
+
++ Response 200 (application/json)
+    + Attributes (Common Response Attributes)
+
+## POST /services/authentication/v1/deleteDevice
+
++ Response 200 (application/json)
+    + Attributes (Common Response Attributes)
+
+## POST /services/authentication/v1/device
+
++ Response 200 (application/json)
+    + Attributes (Common Response Attributes)
+
+## GET /services/authentication/v1/links
+
++ Response 200 (application/json)
+    + Attributes (Common Response Attributes)
+
+## POST /services/authentication/v1/login
+
++ Response 200 (application/json)
+    + Attributes (Common Response Attributes)
+
+## POST /services/authentication/v1/logout
+
++ Response 200 (application/json)
+    + Attributes (Common Response Attributes)
+
+## GET /services/authentication/v1/lostPassword
+
++ Response 200 (application/json)
+    + Attributes (Common Response Attributes)
+
+## POST /services/authentication/v1/oauth/facebook
+
++ Response 200 (application/json)
+    + Attributes (Common Response Attributes)
+
+## POST /services/authentication/v1/oauth/facebook/disconnect
+
++ Response 200 (application/json)
+    + Attributes (Common Response Attributes)
+
+## POST /services/authentication/v1/oauth/google
+
++ Response 200 (application/json)
+    + Attributes (Common Response Attributes)
+
+## GET /services/authentication/v1/oauth/urls
+
+List URLs for SSO OAUTH providers.
+
++ Response 200 (application/json)
+    + Attributes (Common Response Attributes)
+        + facebook: https://www.facebook.com/dialog/oauth?client_id=124258840997748&redirect_uri=https%3A%2F%2Fgoout.net%2Fservices%2Fauthentication%2Fv1%2Foauth%2Ffacebook%2F&scope=public_profile%2Cemail%2Cuser_friends%2Cuser_link&request_type=code&auth_type=rerequest
+        + google: https://accounts.google.com/o/oauth2/auth?client_id=10847206449.apps.googleusercontent.com&response_type=code&scope=https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fuserinfo.profile+https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fuserinfo.email&redirect_uri=https%3A%2F%2Fgoout.net%2Fservices%2Fauthentication%2Fv1%2Foauth%2Fgoogle&state=security_token%3Dafdzdwhaiqolkwlxg%26url%3Dhttps%3A%2F%2Fgoout.net
+
+## POST /services/authentication/v1/registerEmail
+
++ Response 200 (application/json)
+    + Attributes (Common Response Attributes)
 
 ## GET /services/authentication/v1/state
 
@@ -25,14 +103,279 @@ Needs authorization.
         + name (string)
         + authenticated: false (boolean)
 
-## GET /services/authentication/v1/oauth/urls
+# Group Feeder
 
-List URLs for SSO OAUTH providers.
+## GET /services/feeder/v1/entities/categories.json
 
 + Response 200 (application/json)
     + Attributes (Common Response Attributes)
-        + facebook: https://www.facebook.com/dialog/oauth?client_id=124258840997748&redirect_uri=https%3A%2F%2Fgoout.net%2Fservices%2Fauthentication%2Fv1%2Foauth%2Ffacebook%2F&scope=public_profile%2Cemail%2Cuser_friends%2Cuser_link&request_type=code&auth_type=rerequest
-        + google: https://accounts.google.com/o/oauth2/auth?client_id=10847206449.apps.googleusercontent.com&response_type=code&scope=https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fuserinfo.profile+https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fuserinfo.email&redirect_uri=https%3A%2F%2Fgoout.net%2Fservices%2Fauthentication%2Fv1%2Foauth%2Fgoogle&state=security_token%3Dafdzdwhaiqolkwlxg%26url%3Dhttps%3A%2F%2Fgoout.net
+
+## GET /services/feeder/v1/entities/localities.json
+
++ Response 200 (application/json)
+    + Attributes (Common Response Attributes)
+
+## GET /services/feeder/v1/events.json
+
+Get events.
+
++ Attributes
+    + source: strohel.eu (string, required)
+    + user: 123 (number, optional)
+
++ Response 200 (application/json)
+    + Attributes (Common Response Attributes)
+
+## GET /services/feeder/v1/events.json?forceSortByStart=DESC
+
++ Response 200 (application/json)
+    + Attributes (Common Response Attributes)
+
+## GET /services/feeder/v1/performers.json
+
++ Response 200 (application/json)
+    + Attributes (Common Response Attributes)
+
+## POST /services/feeder/v1/sales.json
+
++ Response 200 (application/json)
+    + Attributes (Common Response Attributes)
+
+## GET /services/feeder/v1/venues.json
+
++ Response 200 (application/json)
+    + Attributes (Common Response Attributes)
+
+# Group Profile
+
+## GET /services/profile/v1/deleteProfileImage
+
++ Response 200 (application/json)
+    + Attributes (Common Response Attributes)
+
+## POST /services/profile/v1/entry
+
++ Response 200 (application/json)
+    + Attributes (Common Response Attributes)
+
+## POST /services/profile/v1/facebook/settings
+
++ Response 200 (application/json)
+    + Attributes (Common Response Attributes)
+
+## POST /services/profile/v1/marketingAgreed
+
++ Response 200 (application/json)
+    + Attributes (Common Response Attributes)
+
+## GET /services/profile/v1/purchase
+
++ Response 200 (application/json)
+    + Attributes (Common Response Attributes)
+
+## GET /services/profile/v1/purchases
+
++ Response 200 (application/json)
+    + Attributes (Common Response Attributes)
+
+## POST /services/profile/v1/setNotification
+
++ Response 200 (application/json)
+    + Attributes (Common Response Attributes)
+
+## POST /services/profile/v1/visibility
+
++ Response 200 (application/json)
+    + Attributes (Common Response Attributes)
+
+## GET /services/profile/v2/profile
+
++ Response 200 (application/json)
+    + Attributes (Common Response Attributes)
+
+# Group Sale Form
+
+## GET /services/saleform/v1/activity
+
++ Response 200 (application/json)
+    + Attributes (Common Response Attributes)
+
+## GET /services/saleform/v1/applyDealDiscount
+
++ Response 200 (application/json)
+    + Attributes (Common Response Attributes)
+
+## POST /services/saleform/v1/cards/default
+
++ Response 200 (application/json)
+    + Attributes (Common Response Attributes)
+
+## POST /services/saleform/v1/cards/delete
+
++ Response 200 (application/json)
+    + Attributes (Common Response Attributes)
+
+## GET /services/saleform/v1/cards/list
+
++ Response 200 (application/json)
+    + Attributes (Common Response Attributes)
+
+## GET /services/saleform/v1/clearPurchase
+
++ Response 200 (application/json)
+    + Attributes (Common Response Attributes)
+
+## GET /services/saleform/v1/deselect
+
++ Response 200 (application/json)
+    + Attributes (Common Response Attributes)
+
+## GET /services/saleform/v1/payment
+
++ Response 200 (application/json)
+    + Attributes (Common Response Attributes)
+
+## GET /services/saleform/v1/purchase
+
++ Response 200 (application/json)
+    + Attributes (Common Response Attributes)
+
+## GET /services/saleform/v1/purchases/cancelReservation
+
++ Response 200 (application/json)
+    + Attributes (Common Response Attributes)
+
+## GET /services/saleform/v1/selectByCount
+
++ Response 200 (application/json)
+    + Attributes (Common Response Attributes)
+
+## GET /services/saleform/v1/state
+
++ Response 200 (application/json)
+    + Attributes (Common Response Attributes)
+
+## GET /services/saleform/v1/validatePromoCode
+
++ Response 200 (application/json)
+    + Attributes (Common Response Attributes)
+
+# Group Social
+
+## GET /services/social/v1/feed/list
+
++ Response 200 (application/json)
+    + Attributes (Common Response Attributes)
+
+## POST /services/social/v1/feed/welcomeMessage
+
++ Response 200 (application/json)
+    + Attributes (Common Response Attributes)
+
+## POST /services/social/v1/follow/approveRequest
+
++ Response 200 (application/json)
+    + Attributes (Common Response Attributes)
+
+## POST /services/social/v1/follow/follow
+
++ Response 200 (application/json)
+    + Attributes (Common Response Attributes)
+
+## POST /services/social/v1/follow/followUsers
+
++ Response 200 (application/json)
+    + Attributes (Common Response Attributes)
+
+## GET /services/social/v1/follow/followers
+
++ Response 200 (application/json)
+    + Attributes (Common Response Attributes)
+
+## GET /services/social/v1/follow/following
+
++ Attributes
+    + userId: 123 (number)
+
++ Response 200 (application/json)
+    + Attributes (Common Response Attributes)
+
+## POST /services/social/v1/follow/liked
+
++ Response 200 (application/json)
+    + Attributes (Common Response Attributes)
+
+## GET /services/social/v1/follow/usersForProfile
+
++ Response 200 (application/json)
+    + Attributes (Common Response Attributes)
+
+## GET /services/social/v1/notifications/list
+
++ Response 200 (application/json)
+    + Attributes (Common Response Attributes)
+
+## POST /services/social/v1/notifications/markSeen
+
++ Response 200 (application/json)
+    + Attributes (Common Response Attributes)
+
+## GET /services/social/v1/notifications/settings
+
++ Response 200 (application/json)
+    + Attributes (Common Response Attributes)
+
+## GET /services/social/v1/user/facebookFriends
+
++ Response 200 (application/json)
+    + Attributes (Common Response Attributes)
+
+## GET /services/social/v1/user/facebookFriendsCount
+
++ Response 200 (application/json)
+    + Attributes (Common Response Attributes)
+
+## GET /services/social/v1/user/followRequests
+
++ Response 200 (application/json)
+    + Attributes (Common Response Attributes)
+
+## GET /services/social/v1/user/inviteCounts
+
++ Response 200 (application/json)
+    + Attributes (Common Response Attributes)
+
+## GET /services/social/v1/user/search
+
++ Response 200 (application/json)
+    + Attributes (Common Response Attributes)
+
+## GET /services/social/v1/user/searchInFriends
+
++ Response 200 (application/json)
+    + Attributes (Common Response Attributes)
+
+## GET /services/social/v1/user/shareItem
+
++ Response 200 (application/json)
+    + Attributes (Common Response Attributes)
+
+## GET /services/social/v1/user/sharedList
+
++ Response 200 (application/json)
+    + Attributes (Common Response Attributes)
+
+## GET /services/social/v2/user/featuredUsers
+
++ Response 200 (application/json)
+    + Attributes (Common Response Attributes)
+
+# Group Ticketing
+
+## GET /services/ticketing/v1/contact/search
+
++ Response 200 (application/json)
+    + Attributes (Common Response Attributes)
 
 # Data Structures
 
