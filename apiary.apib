@@ -115,21 +115,69 @@ Needs authorization.
 + Response 200 (application/json)
     + Attributes (Common Response Attributes)
 
-## GET /services/feeder/v1/events.json
+## /services/feeder/v1/events.json
 
 Get events.
 
-+ Attributes
-    + source: strohel.eu (string, required)
-    + user: 123 (number, optional)
+### Per venue [GET]
+
++ Attributes (Common Events Params)
+    + venue (number)
 
 + Response 200 (application/json)
-    + Attributes (Common Response Attributes)
+    + Attributes (Events Response)
 
-## GET /services/feeder/v1/events.json?forceSortByStart=DESC
+### Per scheduleForEvent [GET]
+
++ Attributes (Common Events Params)
+    + scheduleForEvent (number)
 
 + Response 200 (application/json)
-    + Attributes (Common Response Attributes)
+    + Attributes (Events Response)
+
+### Per user [GET]
+
++ Attributes (Common Events Params)
+    + user (number)
+
++ Response 200 (application/json)
+    + Attributes (Events Response)
+
+### Per category, genres, locality [GET]
+
++ Attributes (Common Events Params)
+    + category (number)
+    + genres (string[])
+    + locality (string)
+    + schedule (string, optional)
+    + scheduleTag (string, optional)
+
++ Response 200 (application/json)
+    + Attributes (Events Response)
+
+### Per innerEventsForEvent [GET]
+
++ Attributes (Common Events Params)
+    + innerEventsForEvent (number)
+
++ Response 200 (application/json)
+    + Attributes (Events Response)
+
+### Per performer [GET]
+
++ Attributes (Common Events Params)
+    + performer (number)
+
++ Response 200 (application/json)
+    + Attributes (Events Response)
+
+### Per keywords [GET]
+
++ Attributes (Common Events Params)
+    + keywords (string)
+
++ Response 200 (application/json)
+    + Attributes (Events Response)
 
 ## GET /services/feeder/v1/performers.json
 
@@ -379,6 +427,16 @@ Get events.
 
 # Data Structures
 
+## Common Events Params (object)
+
++ source: strohel.eu (string, required)
++ forceSortByStart: ASC|DESC (string, optional)
++ before (string, optional)
++ after (string, optional)
++ tag (string, optional)
++ unapproved (boolean, optional)
++ page (number, optional)
+
 ## Common Response Attributes (object)
 
 + status (enum[number])
@@ -389,3 +447,5 @@ Get events.
     + Members
         + OK
         + UNAUTHORIZED
+
+## Events Response (Common Response Attributes)
