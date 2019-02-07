@@ -1,0 +1,8 @@
+[package]
+name = "goout-calendar"
+version = "0.1.0"
+authors = ["Matěj Laitl <matej@laitl.cz>"]
+edition = "2018"
+
+[dependencies]
+actix-web = "0.7"
