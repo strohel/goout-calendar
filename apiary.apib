@@ -7,7 +7,7 @@ Reverse-engineered documentation of goout.net API, as of 2019-01.
 
 ## IDs
 
-GoOut uses numeric IDs for its entities (users, ss, ...).
+GoOut uses numeric IDs for its entities (users, events, ...).
 
 In URLs, these IDs are encoded using a variant of a `base25` encoding:
 the alphabet is `a` to `y` (case-sensitive, only small letters allowed)
@@ -100,8 +100,40 @@ Needs authorization.
 
 + Response 200 (application/json)
     + Attributes (Common Response Attributes)
-        + name (string)
-        + authenticated: false (boolean)
+        + authenticated (boolean)
+
+    + Body
+
+            {
+                "id": 43224,
+                "firstName": "Matěj",
+                "lastName": "Laitl",
+                "email": "some@email.com",
+                "public": true,
+                "url": "https://goout.net/en/profile/matej-laitl/ydtc/",
+                "hasImage": true,
+                "image": "https://goout.net/i/user/043224_001_cut.jpg",
+                "isAmbassador": false,
+                "termsAgreed": "2018-05-30 08:20:17",
+                "phone": "123456789",
+                "userName": "usually@email.com",
+                "role": "USER",
+                "calendar": "webcal://goout.net/services/feeder/usercalendar.ics?id=43224&userHash=VQZEs972CsGj79M60TWVkQ==&language=en",
+                "authenticated": true,
+                "newUser": false,
+                "unseen": 0,
+                "counts": {
+                    "usersFollowing": 3,
+                    "usersFollower": 46,
+                    "eventsCurrent": 33,
+                    "performers": 83,
+                    "venues": 64,
+                    "eventsTotal":727
+                },
+                "facebookId": "123123123123123",
+                "facebookAutoFollowFriends": true,
+                "bio": ""
+            }
 
 # Group Feeder
 
@@ -232,6 +264,14 @@ Get events.
     + Attributes (Common Response Attributes)
 
 ## POST /services/profile/v1/visibility
+
++ Response 200 (application/json)
+    + Attributes (Common Response Attributes)
+
+## GET /services/profile/v1/profile
+
++ Attributes
+    + id (number) - numeric user ID
 
 + Response 200 (application/json)
     + Attributes (Common Response Attributes)
