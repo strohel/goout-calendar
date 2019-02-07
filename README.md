@@ -10,3 +10,9 @@ in the [apiary.apib](apiary.apib) file in
 [Apiary](https://strohel.docs.apiary.io/).
 
 The [endpoints.txt](endpoints.txt) file simply lists available endpoints.
+
+## See Also
+
+https://goout.net/
+https://github.com/agiertli/goout-stalker for a somewhat similar project, and
+[an associated blog post](https://medium.com/@respectx/ed65391836f3).
