@@ -2,8 +2,8 @@
 
 use rocket::routes;
 
-mod index;
+mod static_pages;
 
 fn main() {
-    rocket::ignite().mount("/", routes![index::serve]).launch();
+    rocket::ignite().mount("/", routes![static_pages::index]).launch();
 }
