@@ -1,12 +1,9 @@
 #![feature(proc_macro_hygiene, decl_macro)]
 
-use rocket::{get, routes};
+use rocket::routes;
 
-#[get("/")]
-fn index() -> &'static str {
-    "Hello World!"
-}
+mod index;
 
 fn main() {
-    rocket::ignite().mount("/", routes![index]).launch();
+    rocket::ignite().mount("/", routes![index::serve]).launch();
 }
