@@ -2,10 +2,14 @@
 
 use rocket::routes;
 
+mod calendar;
 mod static_pages;
 
 fn main() {
-    rocket::ignite().mount(
-        "/", routes![static_pages::index, static_pages::script]
-    ).launch();
+    rocket::ignite()
+        .mount(
+            "/",
+            routes![static_pages::index, static_pages::script, calendar::serve],
+        )
+        .launch();
 }
