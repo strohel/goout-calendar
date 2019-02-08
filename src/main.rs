@@ -1,17 +1,12 @@
-use actix_web::{server, App, HttpRequest};
+#![feature(proc_macro_hygiene, decl_macro)]
 
-fn index(_req: &HttpRequest) -> &'static str {
-    "Hello world!"
+use rocket::{get, routes};
+
+#[get("/")]
+fn index() -> &'static str {
+    "Hello World!"
 }
 
 fn main() {
-    let bind_addr = "127.0.0.1:8088";
-
-    let app = server::new(|| App::new().resource("/", |r| r.f(index)))
-        .bind(bind_addr)
-        .unwrap();
-
-    println!("Going to listen on {}...", bind_addr);
-    app.run();
-    println!("Terminating.")
+    rocket::ignite().mount("/", routes![index]).launch();
 }
