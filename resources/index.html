@@ -2,23 +2,43 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet"
-        href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.2/css/bulma.min.css">
   <title>GoOut Calendar Exporter</title>
+  <script src="script.js"></script>
 </head>
 <body>
-  <section class="section">
-    <div class="container">
-      <h1 class="title">GoOut Calendar Exporter</h1>
-      <p class="subtitle">
-        This is a simple proxy Web service that serves events of a given
-        user of <a href="https://goout.net/">GoOut.net</a> in an iCalendar
-        format. See
-        <a href="https://github.com/strohel/goout-calendar">homepage on
-        GitHub</a> for more info and source code.
-      </p>
-    </div>
-  </section>
+  <h1>GoOut Calendar Exporter</h1>
+  <p>
+    This is a simple proxy Web service that serves events of a given
+    user of <a href="https://goout.net/">GoOut.net</a> in an iCalendar
+    format. See
+    <a href="https://github.com/strohel/goout-calendar">homepage on
+    GitHub</a> for more info and source code.
+  </p>
+
+  <h2>Determine your GoOut textual ID</h2>
+  <ol>
+    <li>Navigate to <a href="https://goout.net/en/profile">GoOut profile page</a>.</li>
+    <li>Log-in if you aren't already.</li>
+    <li>The page redirects you to
+      <code>https://goout.net/en/profile/your-name/<b>ydtc</b>/</code>
+    </li>
+    <li>Here, <code><b>ydtc</b></code> is your textual GoOut ID.</li>
+  </ol>
+
+  <h2>Get your GoOut calendar as iCal</h2>
+  <form>
+    <p>Paste your textual GoOut ID here:</p>
+    <p>
+      <input type="text" oninput="idChanged(this.value)" placeholder="GoOut ID, e.g. ydtc">
+    </p>
+    <p>
+      <input id='input-http' type="url" placeholder="HTTP URL to iCalendar" size=60 readonly>
+      <a id='a-http' href=#>http link</a>
+    </p>
+    <p>
+      <input id='input-webcal' type="url" placeholder="WEBCAL URL to iCalendar" size=60 readonly>
+      <a id='a-webcal' href=#>webcal link</a>
+    </p>
+  </form>
 </body>
 </html>

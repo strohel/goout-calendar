@@ -8,3 +8,8 @@ pub(in crate) fn index() -> io::Result<NamedFile> {
     // would result in HTTP 404, which would be misleading.
     NamedFile::open("resources/index.html")
 }
+
+#[get("/script.js")]
+pub(in crate) fn script() -> io::Result<NamedFile> {
+    NamedFile::open("resources/script.js")
+}

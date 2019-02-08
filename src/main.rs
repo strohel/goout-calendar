@@ -5,5 +5,7 @@ use rocket::routes;
 mod static_pages;
 
 fn main() {
-    rocket::ignite().mount("/", routes![static_pages::index]).launch();
+    rocket::ignite().mount(
+        "/", routes![static_pages::index, static_pages::script]
+    ).launch();
 }
