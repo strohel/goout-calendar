@@ -14,6 +14,10 @@ the alphabet is `a` to `y` (case-sensitive, only small letters allowed)
 meaning `0` to `24`, written in little-endian order.
 `aab = 0 * 25^0 + 0 * 25^1 + 1 * 25^2 = 625`.
 
+## Cookies
+
+Following cookies seem to hold authentication: `GU`, `GT`, `GS`.
+
 # Group Legacy
 
 These endpoints seem to return HTML snippets.
@@ -389,6 +393,9 @@ Get events.
     + Attributes (Common Response Attributes)
 
 ## POST /services/social/v1/follow/liked
+
++ Attributes
+    + type (string) - One of: user, venue, performer, event, event_schedule
 
 + Response 200 (application/json)
     + Attributes (Common Response Attributes)
