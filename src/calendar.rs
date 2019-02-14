@@ -1,7 +1,7 @@
 use html5ever::tree_builder::QuirksMode;
 use reqwest::{Client, Response};
 use rocket::get;
-use scraper::{Html, Selector};
+use scraper::{ElementRef, Html, Selector};
 use serde_json::{map::Map, value::Value};
 use single::Single;
 use std::error::Error;
@@ -11,6 +11,41 @@ use std::error::Error;
 // I didn't manage to make it to display events for a particular user
 // (maybe even a different endpoint should be used).
 const ENDPOINT_URL: &str = "https://goout.net/legacy/follow/calendarFor";
+
+struct Event {
+    name: String,
+    start_time: String,
+}
+
+impl Event {
+    fn from_html(elem: &ElementRef) -> Result<Self, Box<dyn Error>> {
+        // TODO: it would be better not to do this every time, but how?
+        let name_in_event_sel = Selector::parse(".name").unwrap();
+        let start_time_sel = Selector::parse(".timestamp [itemprop=\"startDate\"]").unwrap();
+
+        // map_err because following compiler message:
+        // > the trait `std::error::Error` is not implemented for `single::Error`
+        let name_elem = elem
+            .select(&name_in_event_sel)
+            .single()
+            .map_err(|_| "Zero or multiple name elements.")?;
+        let name = name_elem.text().collect::<Vec<_>>().join("");
+
+        let start_time_elem = elem
+            .select(&start_time_sel)
+            .single()
+            .map_err(|_| "Zero or multiple name elements.")?;
+        let start_time = start_time_elem
+            .value()
+            .attr("datetime")
+            .ok_or("No datetime in start_time element.")?;
+
+        Ok(Self {
+            name: name.trim().to_string(),
+            start_time: start_time.to_string(),
+        })
+    }
+}
 
 #[get("/services/feeder/usercalendar.ics?<id>")]
 pub(in crate) fn serve(id: u64) -> Result<String, Box<dyn Error>> {
@@ -49,9 +84,10 @@ fn goout_response_json(response: &mut Response) -> Result<Map<String, Value>, Bo
 }
 
 fn parse_events_html(html: &str) -> Result<String, Box<dyn Error>> {
+    // See calendarForReplyExample.html file of what we need to parse.
+
     // unwrap() because it would be programmer error for this not to parse.
     let event_in_fragment_sel = Selector::parse(".eventCard .info").unwrap();
-    let name_in_event_sel = Selector::parse(".name").unwrap();
 
     let fragment = Html::parse_fragment(html);
     if fragment.errors.len() != 0 {
@@ -63,13 +99,8 @@ fn parse_events_html(html: &str) -> Result<String, Box<dyn Error>> {
 
     let mut results = Vec::new();
     for elem in fragment.select(&event_in_fragment_sel) {
-        // map_err because following compiler message:
-        // > the trait `std::error::Error` is not implemented for `single::Error`
-        let name_elem = elem
-            .select(&name_in_event_sel)
-            .single()
-            .map_err(|_| "Zero or multiple name elements.")?;
-        results.push(name_elem.inner_html());
+        let event = Event::from_html(&elem)?;
+        results.push(format!("{}, {} -> TODO", event.name, event.start_time));
     }
     Ok(results.join("\n"))
 }
