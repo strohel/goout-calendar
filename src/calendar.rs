@@ -23,18 +23,10 @@ impl Event {
         let name_in_event_sel = Selector::parse(".name").unwrap();
         let start_time_sel = Selector::parse(".timestamp [itemprop=\"startDate\"]").unwrap();
 
-        // map_err because following compiler message:
-        // > the trait `std::error::Error` is not implemented for `single::Error`
-        let name_elem = elem
-            .select(&name_in_event_sel)
-            .single()
-            .map_err(|_| "Zero or multiple name elements.")?;
+        let name_elem = select_one_elem(elem, &name_in_event_sel)?;
         let name = name_elem.text().collect::<Vec<_>>().join("");
 
-        let start_time_elem = elem
-            .select(&start_time_sel)
-            .single()
-            .map_err(|_| "Zero or multiple name elements.")?;
+        let start_time_elem = select_one_elem(elem, &start_time_sel)?;
         let start_time = start_time_elem
             .value()
             .attr("datetime")
@@ -45,6 +37,18 @@ impl Event {
             start_time: start_time.to_string(),
         })
     }
+}
+
+fn select_one_elem<'a>(
+    parent_elem: &ElementRef<'a>,
+    selector: &Selector,
+) -> Result<ElementRef<'a>, Box<dyn Error>> {
+    // map_err because following compiler message:
+    // > the trait `std::error::Error` is not implemented for `single::Error`
+    parent_elem
+        .select(selector)
+        .single()
+        .map_err(|_| "Zero or multiple name elements.".into())
 }
 
 #[get("/services/feeder/usercalendar.ics?<id>")]
