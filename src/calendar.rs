@@ -3,7 +3,7 @@ use reqwest::{Client, Response};
 use rocket::get;
 use scraper::{ElementRef, Html, Selector};
 use serde_json::{map::Map, value::Value};
-use single::Single;
+use single::{self, Single};
 use std::error::Error;
 
 // This is a legacy endpoint that returns HTML snippets, which are silly to
@@ -15,26 +15,43 @@ const ENDPOINT_URL: &str = "https://goout.net/legacy/follow/calendarFor";
 struct Event {
     name: String,
     start_time: String,
+    end_time: Option<String>,
 }
 
 impl Event {
-    fn from_html(elem: &ElementRef) -> Result<Self, Box<dyn Error>> {
+    fn from_html(parent: &ElementRef) -> Result<Self, Box<dyn Error>> {
         // TODO: it would be better not to do this every time, but how?
         let name_in_event_sel = Selector::parse(".name").unwrap();
         let start_time_sel = Selector::parse(".timestamp [itemprop=\"startDate\"]").unwrap();
+        let end_time_sel = Selector::parse(".timestamp [itemprop=\"endDate\"]").unwrap();
 
-        let name_elem = select_one_elem(elem, &name_in_event_sel)?;
+        let name_elem = select_one_elem(parent, &name_in_event_sel)?;
         let name = name_elem.text().collect::<Vec<_>>().join("");
 
-        let start_time_elem = select_one_elem(elem, &start_time_sel)?;
+        let start_time_elem = select_one_elem(parent, &start_time_sel)?;
         let start_time = start_time_elem
             .value()
             .attr("datetime")
             .ok_or("No datetime in start_time element.")?;
 
+        let end_time_elem = parent.select(&end_time_sel).single();
+        let end_time = match end_time_elem {
+            Ok(elem) => Some(
+                elem.value()
+                    .attr("content")
+                    .ok_or("No content in end_time element.")?
+                    .to_string(),
+            ),
+            Err(single::Error::NoElements) => None,
+            Err(single::Error::MultipleElements) => {
+                return Err("Multiple end_time elements.".into());
+            }
+        };
+
         Ok(Self {
             name: name.trim().to_string(),
             start_time: start_time.to_string(),
+            end_time: end_time,
         })
     }
 }
@@ -42,13 +59,16 @@ impl Event {
 fn select_one_elem<'a>(
     parent_elem: &ElementRef<'a>,
     selector: &Selector,
-) -> Result<ElementRef<'a>, Box<dyn Error>> {
+) -> Result<ElementRef<'a>, String> {
     // map_err because following compiler message:
     // > the trait `std::error::Error` is not implemented for `single::Error`
-    parent_elem
-        .select(selector)
-        .single()
-        .map_err(|_| "Zero or multiple name elements.".into())
+    parent_elem.select(selector).single().map_err(|_| {
+        format!(
+            "Zero or multiple elements for selector {:?} in snippet {}.",
+            selector,
+            parent_elem.html()
+        )
+    })
 }
 
 #[get("/services/feeder/usercalendar.ics?<id>")]
@@ -104,7 +124,10 @@ fn parse_events_html(html: &str) -> Result<String, Box<dyn Error>> {
     let mut results = Vec::new();
     for elem in fragment.select(&event_in_fragment_sel) {
         let event = Event::from_html(&elem)?;
-        results.push(format!("{}, {} -> TODO", event.name, event.start_time));
+        results.push(format!(
+            "{}, {} -> {:?}",
+            event.name, event.start_time, event.end_time
+        ));
     }
     Ok(results.join("\n"))
 }
