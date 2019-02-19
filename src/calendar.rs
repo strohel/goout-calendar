@@ -16,6 +16,9 @@ struct Event {
     name: String,
     start_time: String,
     end_time: Option<String>,
+    venue: String,
+    street_address: Option<String>,
+    address_locality: String,
 }
 
 mod fragment_selectors {
@@ -26,6 +29,11 @@ mod event_selectors {
     pub const NAME: &str = ".name[itemprop=name]";
     pub const START_TIME: &str = "[itemprop=startDate]";
     pub const END_TIME: &str = "[itemprop=endDate]";
+    // pub const DESCRIPTION: &str = "[itemprop=description]"; TODO: not in API reply
+    pub const VENUE: &str = "[itemprop=location] [itemprop=name]";
+    pub const STREET_ADDRESS: &str = "[itemprop=streetAddress]";
+    pub const ADDRESS_LOCALITY: &str = "[itemprop=addressLocality]";
+    // TODO: type of event, first text of <div class="timestamp">
 }
 
 impl Event {
@@ -53,22 +61,34 @@ impl Event {
         };
 
         use event_selectors::*;
-        let name = select_one(NAME)?
-            .text()
-            .collect::<Vec<_>>()
-            .join("")
-            .trim()
-            .to_string();
+        let name = Self::extract_text(&select_one(NAME)?);
         let start_time = Self::extract_attr(&select_one(START_TIME)?, "datetime")?;
         let end_time = select_one_optional(END_TIME)?
             .map(|ref e| Self::extract_attr(e, "content"))
             .transpose()?;
+        let venue = Self::extract_text(&select_one(VENUE)?);
+        let street_address = select_one_optional(STREET_ADDRESS)?
+            .map(|ref e| Self::extract_attr(e, "content"))
+            .transpose()?;
+        let address_locality = Self::extract_attr(&select_one(ADDRESS_LOCALITY)?, "content")?;
 
         Ok(Self {
-            name: name,
-            start_time: start_time,
-            end_time: end_time,
+            name,
+            start_time,
+            end_time,
+            venue,
+            street_address,
+            address_locality,
         })
+    }
+
+    fn extract_text(element: &ElementRef) -> String {
+        element
+            .text()
+            .collect::<Vec<_>>()
+            .join("")
+            .trim()
+            .to_string()
     }
 
     fn extract_attr(element: &ElementRef, name: &str) -> Result<String, Box<dyn Error>> {
@@ -164,10 +184,10 @@ fn parse_events_html(html: &str) -> Result<Vec<String>, Box<dyn Error>> {
 
     let mut results = Vec::new();
     for elem in fragment.select(&event_in_fragment_sel) {
-        let event = Event::from_html(&elem)?;
+        let e = Event::from_html(&elem)?;
         results.push(format!(
-            "{}, {} -> {:?}",
-            event.name, event.start_time, event.end_time
+            "{} at {} ({:?}, {})  {} -> {:?}",
+            e.name, e.venue, e.street_address, e.address_locality, e.start_time, e.end_time
         ));
     }
     Ok(results)
