@@ -30,56 +30,54 @@ mod event_selectors {
 
 impl Event {
     fn from_html(parent: &ElementRef) -> Result<Self, Box<dyn Error>> {
-        use event_selectors::*;
-
-        // TODO: it would be better not to do this every time, but how?
-        let name_in_event_sel = Selector::parse(NAME).unwrap();
-        let name_elem = select_one_elem(parent, &name_in_event_sel)?;
-        let name = name_elem.text().collect::<Vec<_>>().join("");
-
-        let start_time_sel = Selector::parse(START_TIME).unwrap();
-        let start_time_elem = select_one_elem(parent, &start_time_sel)?;
-        let start_time = start_time_elem
-            .value()
-            .attr("datetime")
-            .ok_or("No datetime in start_time element.")?;
-
-        let end_time_sel = Selector::parse(END_TIME).unwrap();
-        let end_time_elem = parent.select(&end_time_sel).single();
-        let end_time = match end_time_elem {
-            Ok(elem) => Some(
-                elem.value()
-                    .attr("content")
-                    .ok_or("No content in end_time element.")?
-                    .to_string(),
-            ),
-            Err(single::Error::NoElements) => None,
-            Err(single::Error::MultipleElements) => {
-                return Err("Multiple end_time elements.".into());
+        let select_one_optional = |selector_str| {
+            // TODO: it would be better not to do this every time, but how?
+            let selector = Selector::parse(selector_str).unwrap();
+            let element_result = parent.select(&selector).single();
+            match element_result {
+                Ok(element) => Ok(Some(element)),
+                Err(single::Error::NoElements) => Ok(None),
+                Err(single::Error::MultipleElements) => Err(format!(
+                    "Multiple elements matching {} in {}.",
+                    selector_str,
+                    parent.html()
+                )),
             }
         };
+        let select_one = |selector_str| {
+            select_one_optional(selector_str)?.ok_or(format!(
+                "No elements matching {} in {}.",
+                selector_str,
+                parent.html()
+            ))
+        };
+
+        use event_selectors::*;
+        let name = select_one(NAME)?
+            .text()
+            .collect::<Vec<_>>()
+            .join("")
+            .trim()
+            .to_string();
+        let start_time = Self::extract_attr(&select_one(START_TIME)?, "datetime")?;
+        let end_time = select_one_optional(END_TIME)?
+            .map(|ref e| Self::extract_attr(e, "content"))
+            .transpose()?;
 
         Ok(Self {
-            name: name.trim().to_string(),
-            start_time: start_time.to_string(),
+            name: name,
+            start_time: start_time,
             end_time: end_time,
         })
     }
-}
 
-fn select_one_elem<'a>(
-    parent_elem: &ElementRef<'a>,
-    selector: &Selector,
-) -> Result<ElementRef<'a>, String> {
-    // map_err because following compiler message:
-    // > the trait `std::error::Error` is not implemented for `single::Error`
-    parent_elem.select(selector).single().map_err(|_| {
-        format!(
-            "Zero or multiple elements for selector {:?} in snippet {}.",
-            selector,
-            parent_elem.html()
-        )
-    })
+    fn extract_attr(element: &ElementRef, name: &str) -> Result<String, Box<dyn Error>> {
+        let value = element
+            .value()
+            .attr(name)
+            .ok_or(format!("No attribute {} in element.", name))?;
+        Ok(value.to_string())
+    }
 }
 
 #[get("/services/feeder/usercalendar.ics?<id>")]
