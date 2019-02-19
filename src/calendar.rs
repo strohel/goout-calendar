@@ -18,12 +18,23 @@ struct Event {
     end_time: Option<String>,
 }
 
+mod fragment_selectors {
+    pub const EVENT: &str = ".eventCard .info";
+}
+
+mod event_selectors {
+    pub const NAME: &str = ".name[itemprop=name]";
+    pub const START_TIME: &str = "[itemprop=startDate]";
+    pub const END_TIME: &str = "[itemprop=endDate]";
+}
+
 impl Event {
     fn from_html(parent: &ElementRef) -> Result<Self, Box<dyn Error>> {
+        use event_selectors::*;
         // TODO: it would be better not to do this every time, but how?
-        let name_in_event_sel = Selector::parse(".name").unwrap();
-        let start_time_sel = Selector::parse(".timestamp [itemprop=\"startDate\"]").unwrap();
-        let end_time_sel = Selector::parse(".timestamp [itemprop=\"endDate\"]").unwrap();
+        let name_in_event_sel = Selector::parse(NAME).unwrap();
+        let start_time_sel = Selector::parse(START_TIME).unwrap();
+        let end_time_sel = Selector::parse(END_TIME).unwrap();
 
         let name_elem = select_one_elem(parent, &name_in_event_sel)?;
         let name = name_elem.text().collect::<Vec<_>>().join("");
@@ -143,7 +154,7 @@ fn parse_events_html(html: &str) -> Result<Vec<String>, Box<dyn Error>> {
     // See calendarForReplyExample.html file of what we need to parse.
 
     // unwrap() because it would be programmer error for this not to parse.
-    let event_in_fragment_sel = Selector::parse(".eventCard .info").unwrap();
+    let event_in_fragment_sel = Selector::parse(fragment_selectors::EVENT).unwrap();
 
     let fragment = Html::parse_fragment(html);
     if fragment.errors.len() != 0 {
