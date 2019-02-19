@@ -74,10 +74,32 @@ fn select_one_elem<'a>(
 #[get("/services/feeder/usercalendar.ics?<id>")]
 pub(in crate) fn serve(id: u64) -> Result<String, Box<dyn Error>> {
     let client = Client::new();
+
+    // Normally, we would stream to output as soon as we get first page, but
+    // instead we load all pages first and only then start replying. We can
+    // afford this, because the calendar endpoint would be typically called
+    // infrequently and in non-interactive manner. Advantage is that we can
+    // properly report errors on HTTP level, and siplicity. Disadvantage is
+    // high latency of first byte served.
+    let mut lines = Vec::new();
+    for page in 1.. {
+        let json = fetch_page(&client, id, page)?;
+        let (html_str, has_next) = parse_json_reply(&json)?;
+        lines.extend(parse_events_html(html_str)?);
+
+        if !has_next {
+            break;
+        }
+    }
+
+    Ok(lines.join("\n"))
+}
+
+fn fetch_page(client: &Client, id: u64, page: u16) -> Result<Map<String, Value>, Box<dyn Error>> {
     let params = &[
         ("userId", id.to_string()),
         ("future", "false".to_string()),
-        ("page", 1.to_string()),
+        ("page", page.to_string()),
     ];
 
     let mut response = client
@@ -87,11 +109,7 @@ pub(in crate) fn serve(id: u64) -> Result<String, Box<dyn Error>> {
         .error_for_status()?;
     eprintln!("Retrieved {}.", response.url());
 
-    let json = goout_response_json(&mut response)?;
-    let html_val = json.get("html").ok_or("No html key in response.")?;
-    let html_str = html_val.as_str().ok_or("Key html is not a string.")?;
-
-    parse_events_html(html_str)
+    goout_response_json(&mut response)
 }
 
 fn goout_response_json(response: &mut Response) -> Result<Map<String, Value>, Box<dyn Error>> {
@@ -107,7 +125,21 @@ fn goout_response_json(response: &mut Response) -> Result<Map<String, Value>, Bo
     Ok(json)
 }
 
-fn parse_events_html(html: &str) -> Result<String, Box<dyn Error>> {
+fn parse_json_reply(json: &Map<String, Value>) -> Result<(&str, bool), Box<dyn Error>> {
+    let html_str = json
+        .get("html")
+        .ok_or("No html key in response.")?
+        .as_str()
+        .ok_or("Key html is not a string.")?;
+    let has_next = json
+        .get("hasNext")
+        .ok_or("No hasNext key in response.")?
+        .as_bool()
+        .ok_or("Key hasNext is not a bool")?;
+    Ok((html_str, has_next))
+}
+
+fn parse_events_html(html: &str) -> Result<Vec<String>, Box<dyn Error>> {
     // See calendarForReplyExample.html file of what we need to parse.
 
     // unwrap() because it would be programmer error for this not to parse.
@@ -129,5 +161,5 @@ fn parse_events_html(html: &str) -> Result<String, Box<dyn Error>> {
             event.name, event.start_time, event.end_time
         ));
     }
-    Ok(results.join("\n"))
+    Ok(results)
 }
