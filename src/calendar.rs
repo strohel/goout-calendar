@@ -31,20 +31,20 @@ mod event_selectors {
 impl Event {
     fn from_html(parent: &ElementRef) -> Result<Self, Box<dyn Error>> {
         use event_selectors::*;
+
         // TODO: it would be better not to do this every time, but how?
         let name_in_event_sel = Selector::parse(NAME).unwrap();
-        let start_time_sel = Selector::parse(START_TIME).unwrap();
-        let end_time_sel = Selector::parse(END_TIME).unwrap();
-
         let name_elem = select_one_elem(parent, &name_in_event_sel)?;
         let name = name_elem.text().collect::<Vec<_>>().join("");
 
+        let start_time_sel = Selector::parse(START_TIME).unwrap();
         let start_time_elem = select_one_elem(parent, &start_time_sel)?;
         let start_time = start_time_elem
             .value()
             .attr("datetime")
             .ok_or("No datetime in start_time element.")?;
 
+        let end_time_sel = Selector::parse(END_TIME).unwrap();
         let end_time_elem = parent.select(&end_time_sel).single();
         let end_time = match end_time_elem {
             Ok(elem) => Some(
