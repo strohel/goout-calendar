@@ -53,7 +53,7 @@ impl Event {
             }
         };
         let select_one = |selector_str| {
-            select_one_optional(selector_str)?.ok_or(format!(
+            select_one_optional(selector_str)?.ok_or_else(|| format!(
                 "No elements matching {} in {}.",
                 selector_str,
                 parent.html()
@@ -95,7 +95,7 @@ impl Event {
         let value = element
             .value()
             .attr(name)
-            .ok_or(format!("No attribute {} in element.", name))?;
+            .ok_or_else(|| format!("No attribute {} in element.", name))?;
         Ok(value.to_string())
     }
 }
@@ -175,7 +175,7 @@ fn parse_events_html(html: &str) -> Result<Vec<String>, Box<dyn Error>> {
     let event_in_fragment_sel = Selector::parse(fragment_selectors::EVENT).unwrap();
 
     let fragment = Html::parse_fragment(html);
-    if fragment.errors.len() != 0 {
+    if !fragment.errors.is_empty() {
         return Err(fragment.errors.join("\n").into());
     }
     if fragment.quirks_mode != QuirksMode::NoQuirks {
