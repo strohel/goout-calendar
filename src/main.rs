@@ -3,6 +3,7 @@
 use rocket::routes;
 
 mod calendar;
+mod goout_api;
 mod static_pages;
 
 fn main() {
