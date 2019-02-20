@@ -24,8 +24,15 @@ These endpoints seem to return HTML snippets.
 
 ## GET /legacy/follow/calendarFor
 
++ Attributes
+    + userId (number)
+    + future (boolean)
+    + page (number)
+
 + Response 200 (application/json)
     + Attributes (Common Response Attributes)
+        + hasNext: true (boolean)
+        + html (string)
 
 ## GET /legacy/follow/followsForProfile
 
