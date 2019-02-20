@@ -59,7 +59,7 @@ pub(in crate) fn parse_json_reply(json: &Map<String, Value>) -> HandlerResult<(&
     Ok((html_str, has_next))
 }
 
-pub(in crate) fn parse_events_html(html: &str) -> HandlerResult<Vec<String>> {
+pub(in crate) fn parse_events_html(html: &str) -> HandlerResult<Vec<Event>> {
     // See calendarForReplyExample.html file of what we need to parse.
 
     // unwrap() because it would be programmer error for this not to parse.
@@ -73,15 +73,12 @@ pub(in crate) fn parse_events_html(html: &str) -> HandlerResult<Vec<String>> {
         return Err(format!("HTML parsed only with quirks {:?}.", fragment.quirks_mode).into());
     }
 
-    let mut results = Vec::new();
+    let mut events = Vec::new();
     for elem in fragment.select(&event_in_fragment_sel) {
-        let e = Event::from_html(&elem)?;
-        results.push(format!(
-            "{} at {} ({:?}, {})  {} -> {:?}",
-            e.name, e.venue, e.street_address, e.address_locality, e.start_time, e.end_time
-        ));
+        let event = Event::from_html(&elem)?;
+        events.push(event);
     }
-    Ok(results)
+    Ok(events)
 }
 
 mod fragment_selectors {
