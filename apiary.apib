@@ -158,66 +158,764 @@ Needs authorization.
 + Response 200 (application/json)
     + Attributes (Common Response Attributes)
 
-## /services/feeder/v1/events.json
+## GET /services/feeder/v1/events.json?venue={venueId}
 
-Get events.
-
-### Per venue [GET]
++ Parameters
+    + venueId (number)
 
 + Attributes (Common Events Params)
-    + venue (number)
 
 + Response 200 (application/json)
     + Attributes (Events Response)
 
-### Per scheduleForEvent [GET]
+## GET /services/feeder/v1/events.json?scheduleForEvent={eventId}
+
++ Parameters
+    + eventId (number)
 
 + Attributes (Common Events Params)
-    + scheduleForEvent (number)
 
 + Response 200 (application/json)
     + Attributes (Events Response)
 
-### Per user [GET]
+## GET /services/feeder/v1/events.json?user={userId}
+
++ Parameters
+    + userId (number)
 
 + Attributes (Common Events Params)
-    + user (number)
 
 + Response 200 (application/json)
     + Attributes (Events Response)
+    
+    + Body
 
-### Per category, genres, locality [GET]
+            {
+              "status": 200,
+              "message": "OK",
+              "hasNext": true,
+              "page": 4,
+              "schedule": [
+                {
+                  "id": 4365563,
+                  "announced": "2018-12-05 03:00:00",
+                  "cancelled": false,
+                  "currency": "CZK",
+                  "endISO8601": "2019-02-27T23:59:59.000+0100",
+                  "eventId": 1482437,
+                  "followersCount@DEPRECATED user followerCount": 42,
+                  "followersCount": 42,
+                  "followerCount": 42,
+                  "hourIgnore@DEPRECATED USE hourIgnored": false,
+                  "hourIgnore": false,
+                  "hourIgnored": false,
+                  "permanent": false,
+                  "pricing": "",
+                  "relativeFollowers": 42,
+                  "relativeFollowersInWeek": 10,
+                  "sourceUrls": [
+                    "http://www.meetfactory.cz/en/program/detail/ceny-apollo-2018"
+                  ],
+                  "start": "2019-02-27 20:30:00",
+                  "startISO8601": "2019-02-27T20:30:00.000+0100",
+                  "state": "APPROVED",
+                  "tags": [],
+                  "timezone": "Europe/Prague",
+                  "venueId": 170,
+                  "performerIds": [
+                    2259851,
+                    2248815,
+                    930,
+                    2196682,
+                    4794
+                  ],
+                  "venueLocality": {
+                    "id": 0,
+                    "name": "Prague",
+                    "enum": "CZ_PRAGUE",
+                    "new": false,
+                    "country": {
+                      "id": 115,
+                      "name": "Czechia",
+                      "enum": "CZECH_REPUBLIC",
+                      "shortCode": "CZ"
+                    }
+                  },
+                  "isLongTerm": false,
+                  "uploadedOnISO8601": "2019-02-26T02:59:23.000+0100",
+                  "url": "https://goout.net/en/other-events/hudebni-ceny-apollo-2018/mwvtd/+nwjel/",
+                  "followersImages": [
+                    {
+                      "id": 27,
+                      "firstName": "Vojta",
+                      "userImageIndex": 5,
+                      "url": "https://goout.net/i/user/000027_005_min.jpg"
+                    },
+                    {
+                      "id": 25651,
+                      "firstName": "Jen",
+                      "userImageIndex": 3,
+                      "url": "https://goout.net/i/user/025651_003_min.jpg"
+                    },
+                    {
+                      "id": 31351,
+                      "firstName": "Radim",
+                      "userImageIndex": 4,
+                      "url": "https://goout.net/i/user/031351_004_min.jpg"
+                    },
+                    {
+                      "id": 154263,
+                      "firstName": "Andrea",
+                      "userImageIndex": 1,
+                      "url": "https://goout.net/i/user/154263_001_min.jpg"
+                    }
+                  ]
+                }
+              ],
+              "venues": {
+                "170": {
+                  "id": 170,
+                  "name": "MeetFactory",
+                  "text": "MeetFactory was founded in 2001 and is a non-for-profit international center for contemporary art. Their mission is to foster a dialogue between individual genres and make the current happenings on the art scene accessible to the widest public. They support original projects in the fields of visual arts, theater and music as well as interdisciplinary and experimental platforms.\n\nThe program of MeetFactory consists in four dramaturgic departments. The music program presents the international independent music scene, holding six to eight performances per month in the music hall fitted with high-end audio equipment. The theater program focuses on contemporary prose, as well as experimental interdisciplinary projects, often involving visual artists, musicians, or non-actors. The three galleries offer space for critical confrontation of the national and international art scenes. The international Artist-in-Residence program is the largest studio program in the Czech Republic.",
+                  "address": "Ke Sklárně 15",
+                  "city": "Praha 5",
+                  "latitude": 50.0533,
+                  "longitude": 14.4082,
+                  "sourceUrl": "http://www.meetfactory.cz/en/",
+                  "followerCount": 2661,
+                  "followersCount": 2661,
+                  "panorama": false,
+                  "eventCount": 43,
+                  "state": "APPROVED",
+                  "locality": {
+                    "id": 0,
+                    "name": "Prague",
+                    "enum": "CZ_PRAGUE",
+                    "new": false,
+                    "country": {
+                      "id": 115,
+                      "name": "Czechia",
+                      "enum": "CZECH_REPUBLIC",
+                      "shortCode": "CZ"
+                    }
+                  },
+                  "categories": {
+                    "17": {
+                      "id": 17,
+                      "name": "Clubs",
+                      "enum": "CLUB"
+                    },
+                    "18": {
+                      "id": 18,
+                      "name": "Theatres",
+                      "enum": "THEATRE"
+                    },
+                    "19": {
+                      "id": 19,
+                      "name": "Galleries",
+                      "enum": "GALLERY"
+                    },
+                    "22": {
+                      "id": 22,
+                      "name": "Cinemas",
+                      "enum": "CINEMA"
+                    },
+                    "152": {
+                      "id": 152,
+                      "name": "Outdoor cinemas",
+                      "enum": "CINEMA_OPEN_AIR"
+                    }
+                  },
+                  "mainImage": {
+                    "id": 519412,
+                    "src": "https://goout.net/i/051/519412-%%%.jpg"
+                  },
+                  "images": [
+                    {
+                      "id": 519412,
+                      "src": "https://goout.net/i/051/519412-%%%.jpg"
+                    },
+                    {
+                      "id": 36603,
+                      "src": "https://goout.net/i/003/36603-%%%.jpg"
+                    },
+                    {
+                      "id": 682407,
+                      "src": "https://goout.net/i/068/682407-%%%.jpg"
+                    },
+                    {
+                      "id": 682389,
+                      "src": "https://goout.net/i/068/682389-%%%.jpg"
+                    },
+                    {
+                      "id": 519413,
+                      "src": "https://goout.net/i/051/519413-%%%.jpg"
+                    },
+                    {
+                      "id": 519414,
+                      "src": "https://goout.net/i/051/519414-%%%.jpg"
+                    }
+                  ],
+                  "videos": [],
+                  "url": "https://goout.net/en/cultural-centres/meetfactory/ug/"
+                }
+              },
+              "performers": {
+                "930": {
+                  "id": 930,
+                  "mainCategory": {
+                    "id": 38,
+                    "name": "Musicians",
+                    "enum": "MUSICIANS"
+                  },
+                  "categories": [
+                    {
+                      "id": 38,
+                      "name": "Musicians",
+                      "enum": "MUSICIANS"
+                    },
+                    {
+                      "id": 48,
+                      "name": "DJs",
+                      "enum": "DJS"
+                    }
+                  ],
+                  "countries": [
+                    {
+                      "id": 115,
+                      "name": "Czechia",
+                      "enum": "CZECH_REPUBLIC",
+                      "shortCode": "CZ"
+                    }
+                  ],
+                  "eventCount": 4,
+                  "followerCount": 224,
+                  "followersCount": 224,
+                  "mainImage": {
+                    "id": 651999,
+                    "src": "https://goout.net/i/065/651999-%%%.jpg"
+                  },
+                  "images": [
+                    {
+                      "id": 651999,
+                      "src": "https://goout.net/i/065/651999-%%%.jpg"
+                    },
+                    {
+                      "id": 266158,
+                      "src": "https://goout.net/i/026/266158-%%%.jpg"
+                    },
+                    {
+                      "id": 603190,
+                      "src": "https://goout.net/i/060/603190-%%%.jpg"
+                    }
+                  ],
+                  "tags": [
+                    "Ambient",
+                    "Classical",
+                    "Electronic"
+                  ],
+                  "name": "Floex",
+                  "text": "Tomáš Dvořák, better known as Floex, is a clarinetist, composer, producer, and multimedia artist from Prague (Czech Republic). His music is characterized by a unique exploration of electroacoustic nexus and the deep atmospheric mood in his tracks. He continuously widens his musical focus by experimenting in the interactive multimedia field.\n\nFrom childhood he has been learning clarinet, which later became the key instrument to his music - not only as an “instrumental signature,” but also as a way of diversifying his compositional approach. In 1996 Tomáš started to compose under his project name “Floex.” His debut album _Pocustone (2001)_ bridges relatively isolated genres such as nu-jazz, electronic and modern contemporary music. The album was highly critically acclaimed beyond just the Czech Republic and gained several awards (Angel Award 2001 and Nomination to Europian Qwartz Awards).\n\nHe is well known for his cooperation with Amanita Design on the soundtracks for the games _Samorost 2 (2006)_ and _Machinarium (2009)_. The _Machinarium_ OST gained massive popularity from fans and critics alike and was selected as the best 2009 soundtrack, according to the world’s number one game magazine - PC Gamer.\n\nFloex sometimes performs live with his band: Sára Vondrášková - vocals and keyboards, Tomáš Dvořák - electronics, clarinet and midiclarinet, Jirka Javůrek - clarinet, midiclarinet and bass clarinet, Marián Petržela - drums!",
+                  "entityType": "performer",
+                  "sourceUrl": "http://www.floex.cz/",
+                  "state": "APPROVED",
+                  "videos": [
+                    {
+                      "id": 1106399,
+                      "type": "YOUTUBE",
+                      "videoId": "pePOsagq-9M",
+                      "name": "Floex & Tom Hodge – Wednesday (Is The New Friday)"
+                    },
+                    {
+                      "id": 1106402,
+                      "type": "YOUTUBE",
+                      "videoId": "dDNKtsWuZ8k",
+                      "name": "Floex & Tom Hodge – Inauguration Of Nobody"
+                    },
+                    {
+                      "id": 7122,
+                      "type": "YOUTUBE",
+                      "videoId": "1eZUO1C6p2M",
+                      "name": "Floex – Nel Blu"
+                    }
+                  ],
+                  "url": "https://goout.net/en/artists/floex/fmb/",
+                  "uploadedOnISO8601": {
+                    "locale": "en_us",
+                    "calendar": {
+                      "year": 2019,
+                      "month": 1,
+                      "dayOfMonth": 12,
+                      "hourOfDay": 14,
+                      "minute": 7,
+                      "second": 31
+                    }
+                  }
+                },
+                "2248815": {
+                  "id": 2248815,
+                  "mainCategory": {
+                    "id": 38,
+                    "name": "Musicians",
+                    "enum": "MUSICIANS"
+                  },
+                  "categories": [
+                    {
+                      "id": 38,
+                      "name": "Musicians",
+                      "enum": "MUSICIANS"
+                    },
+                    {
+                      "id": 45,
+                      "name": "Singers",
+                      "enum": "MALE_SINGERS"
+                    }
+                  ],
+                  "countries": [
+                    {
+                      "id": 115,
+                      "name": "Czechia",
+                      "enum": "CZECH_REPUBLIC",
+                      "shortCode": "CZ"
+                    }
+                  ],
+                  "eventCount": 6,
+                  "followerCount": 12,
+                  "followersCount": 12,
+                  "mainImage": {
+                    "id": 366383,
+                    "src": "https://goout.net/i/036/366383-%%%.jpg"
+                  },
+                  "images": [
+                    {
+                      "id": 366383,
+                      "src": "https://goout.net/i/036/366383-%%%.jpg"
+                    }
+                  ],
+                  "tags": [
+                    "Alternative/Indie"
+                  ],
+                  "name": "Čáry života",
+                  "text": "_“Slow and sad songs about love.”_ This is how Jan Boroš, originally from Valašské Meziříčí, describes the character of his new project Life Lines. His homegroup is currently based in Berlin under the name Fiordmoss, preparing a new album for the spring. Unlike their electronic Baroque, however, the Lines of Life are minimalist, intimate, and composed mostly of guitar with Czech texts.",
+                  "entityType": "performer",
+                  "sourceUrl": "",
+                  "state": "APPROVED",
+                  "videos": [
+                    {
+                      "id": 1128656,
+                      "type": "YOUTUBE",
+                      "videoId": "5X-fVOeU0xw",
+                      "name": "Čáry života – Šílená"
+                    },
+                    {
+                      "id": 1128658,
+                      "type": "YOUTUBE",
+                      "videoId": "PP4Z6ywlNog",
+                      "name": "Čáry života– Svatební"
+                    },
+                    {
+                      "id": 1128661,
+                      "type": "YOUTUBE",
+                      "videoId": "UnoGgaAt0rI",
+                      "name": "Čáry života – (live)"
+                    }
+                  ],
+                  "url": "https://goout.net/en/artists/cary-zivota/pcxsf/",
+                  "uploadedOnISO8601": {
+                    "locale": "en_us",
+                    "calendar": {
+                      "year": 2019,
+                      "month": 1,
+                      "dayOfMonth": 12,
+                      "hourOfDay": 13,
+                      "minute": 52,
+                      "second": 47
+                    }
+                  }
+                },
+                "2196682": {
+                  "id": 2196682,
+                  "mainCategory": {
+                    "id": 38,
+                    "name": "Musicians",
+                    "enum": "MUSICIANS"
+                  },
+                  "categories": [
+                    {
+                      "id": 38,
+                      "name": "Musicians",
+                      "enum": "MUSICIANS"
+                    }
+                  ],
+                  "countries": [
+                    {
+                      "id": 115,
+                      "name": "Czechia",
+                      "enum": "CZECH_REPUBLIC",
+                      "shortCode": "CZ"
+                    }
+                  ],
+                  "eventCount": 1,
+                  "followerCount": 37,
+                  "followersCount": 37,
+                  "mainImage": {
+                    "id": 674916,
+                    "src": "https://goout.net/i/067/674916-%%%.jpg"
+                  },
+                  "images": [
+                    {
+                      "id": 674916,
+                      "src": "https://goout.net/i/067/674916-%%%.jpg"
+                    },
+                    {
+                      "id": 438488,
+                      "src": "https://goout.net/i/043/438488-%%%.jpg"
+                    }
+                  ],
+                  "tags": [
+                    "Alternative",
+                    "Rock"
+                  ],
+                  "name": "Tomáš Palucha",
+                  "text": "",
+                  "entityType": "performer",
+                  "sourceUrl": "",
+                  "state": "APPROVED",
+                  "videos": [
+                    {
+                      "id": 1019848,
+                      "type": "YOUTUBE",
+                      "videoId": "ViYsinr5gv4",
+                      "name": "Tomáš Palucha – Selective Amnesia"
+                    },
+                    {
+                      "id": 1019847,
+                      "type": "YOUTUBE",
+                      "videoId": "f8xce-byU8E",
+                      "name": "Tomáš Palucha – My Grandfather's Ghost"
+                    },
+                    {
+                      "id": 919805,
+                      "type": "YOUTUBE",
+                      "videoId": "vl6zY1BK0rM",
+                      "name": "Tomáš Palucha – Konvoj"
+                    }
+                  ],
+                  "url": "https://goout.net/en/artists/tomas-palucha/hropf/",
+                  "uploadedOnISO8601": {
+                    "locale": "en_us",
+                    "calendar": {
+                      "year": 2018,
+                      "month": 8,
+                      "dayOfMonth": 19,
+                      "hourOfDay": 12,
+                      "minute": 49,
+                      "second": 35
+                    }
+                  }
+                },
+                "2259851": {
+                  "id": 2259851,
+                  "mainCategory": {
+                    "id": 44,
+                    "name": "Bands",
+                    "enum": "BANDS"
+                  },
+                  "categories": [
+                    {
+                      "id": 44,
+                      "name": "Bands",
+                      "enum": "BANDS"
+                    }
+                  ],
+                  "countries": [
+                    {
+                      "id": 115,
+                      "name": "Czechia",
+                      "enum": "CZECH_REPUBLIC",
+                      "shortCode": "CZ"
+                    }
+                  ],
+                  "eventCount": 5,
+                  "followerCount": 33,
+                  "followersCount": 33,
+                  "mainImage": {
+                    "id": 733104,
+                    "src": "https://goout.net/i/073/733104-%%%.jpg"
+                  },
+                  "images": [
+                    {
+                      "id": 733104,
+                      "src": "https://goout.net/i/073/733104-%%%.jpg"
+                    },
+                    {
+                      "id": 615170,
+                      "src": "https://goout.net/i/061/615170-%%%.jpg"
+                    }
+                  ],
+                  "tags": [
+                    "Rock"
+                  ],
+                  "name": "Povodí Ohře",
+                  "text": "",
+                  "entityType": "performer",
+                  "sourceUrl": "",
+                  "state": "APPROVED",
+                  "videos": [
+                    {
+                      "id": 1079257,
+                      "type": "YOUTUBE",
+                      "videoId": "IfVmnam-bA0",
+                      "name": "Povodí Ohře – Povodí Ohře"
+                    },
+                    {
+                      "id": 1084830,
+                      "type": "YOUTUBE",
+                      "videoId": "vzm8JYYa5l4",
+                      "name": "Povodí Ohře – KPP"
+                    },
+                    {
+                      "id": 1101402,
+                      "type": "YOUTUBE",
+                      "videoId": "mVWS3ACSoh8",
+                      "name": "Povodí Ohře – (live)"
+                    }
+                  ],
+                  "url": "https://goout.net/en/artists/povodi-ohre/btptf/",
+                  "uploadedOnISO8601": {
+                    "locale": "en_us",
+                    "calendar": {
+                      "year": 2019,
+                      "month": 1,
+                      "dayOfMonth": 16,
+                      "hourOfDay": 22,
+                      "minute": 38,
+                      "second": 28
+                    }
+                  }
+                },
+                "4794": {
+                  "id": 4794,
+                  "mainCategory": {
+                    "id": 44,
+                    "name": "Bands",
+                    "enum": "BANDS"
+                  },
+                  "categories": [
+                    {
+                      "id": 44,
+                      "name": "Bands",
+                      "enum": "BANDS"
+                    }
+                  ],
+                  "countries": [
+                    {
+                      "id": 115,
+                      "name": "Czechia",
+                      "enum": "CZECH_REPUBLIC",
+                      "shortCode": "CZ"
+                    }
+                  ],
+                  "eventCount": 5,
+                  "followerCount": 465,
+                  "followersCount": 465,
+                  "mainImage": {
+                    "id": 705247,
+                    "src": "https://goout.net/i/070/705247-%%%.jpg"
+                  },
+                  "images": [
+                    {
+                      "id": 705247,
+                      "src": "https://goout.net/i/070/705247-%%%.jpg"
+                    },
+                    {
+                      "id": 638388,
+                      "src": "https://goout.net/i/063/638388-%%%.jpg"
+                    },
+                    {
+                      "id": 347547,
+                      "src": "https://goout.net/i/034/347547-%%%.jpg"
+                    },
+                    {
+                      "id": 56275,
+                      "src": "https://goout.net/i/005/56275-%%%.jpg"
+                    },
+                    {
+                      "id": 444656,
+                      "src": "https://goout.net/i/044/444656-%%%.jpg"
+                    },
+                    {
+                      "id": 444654,
+                      "src": "https://goout.net/i/044/444654-%%%.jpg"
+                    }
+                  ],
+                  "tags": [
+                    "Electronic",
+                    "Experimental",
+                    "Hip-Hop"
+                  ],
+                  "name": "WWW Neurobeat",
+                  "text": "WWW originated in Prague in the early nineties. No one at that time knew that the band's name would later get a whole new meaning. Originally, the name WWW was abbreviated to English \"We Want Word\". The WWW at that time united the first Czech hip hop culture enthusiasts; they were one of the first rap bands in our country. They also co-created the foundations of local graffiti, breakdancing and turntablistic scenes. In the later years, WWW began to work with live instruments, the band acted as a posthiphop big band and slowly deviated from classic rap production. In 1998, the band peaked with frequent concerts, and compositions that were based on independent compilations.",
+                  "entityType": "performer",
+                  "sourceUrl": "",
+                  "state": "APPROVED",
+                  "videos": [
+                    {
+                      "id": 1092842,
+                      "type": "YOUTUBE",
+                      "videoId": "Kd6lC14gy4c",
+                      "name": "WWW – Stát"
+                    },
+                    {
+                      "id": 1092845,
+                      "type": "YOUTUBE",
+                      "videoId": "pyDmqA7erb8",
+                      "name": "WWW – Pod nebem nebe"
+                    },
+                    {
+                      "id": 926718,
+                      "type": "YOUTUBE",
+                      "videoId": "m_70AxZx9V4",
+                      "name": "WWW – Pikola"
+                    }
+                  ],
+                  "url": "https://goout.net/en/artists/www-neurobeat/tqh/",
+                  "uploadedOnISO8601": {
+                    "locale": "en_us",
+                    "calendar": {
+                      "year": 2019,
+                      "month": 1,
+                      "dayOfMonth": 19,
+                      "hourOfDay": 10,
+                      "minute": 34,
+                      "second": 58
+                    }
+                  }
+                }
+              },
+              "events": {
+                "1482437": {
+                  "id": 1482437,
+                  "name": "Hudební ceny Apollo 2018",
+                  "url": "https://goout.net/en/other-events/hudebni-ceny-apollo-2018/mwvtd/",
+                  "state": "APPROVED",
+                  "categories": {
+                    "5": {
+                      "id": 5,
+                      "name": "Concerts",
+                      "enum": "CONCERTS"
+                    },
+                    "20": {
+                      "id": 20,
+                      "name": "Other events",
+                      "enum": "IN_CITY"
+                    }
+                  },
+                  "text": "Apollo Czech Music Critics Awards for 2018. The names of the performers will be further specified. Moderated by Nikola Mucha.\n\nNominated albums:\n- Čáry života: _Stínítko_\n- Floex & Tom Hodge: _A Portrait Of John Doe_\n- Manon Meurt: _MMXVIII_\n- Tomáš Palucha: _Čaro_\n- Povodí Ohře: _Povodí Ohře_\n- Pris: _Naše večery_\n- WWW: _Neutopíš se dvakrát v téže řece_",
+                  "images": [
+                    {
+                      "id": 715863,
+                      "src": "https://goout.net/i/071/715863-%%%.jpg"
+                    },
+                    {
+                      "id": 715865,
+                      "src": "https://goout.net/i/071/715865-%%%.jpg"
+                    },
+                    {
+                      "id": 715866,
+                      "src": "https://goout.net/i/071/715866-%%%.jpg"
+                    },
+                    {
+                      "id": 715867,
+                      "src": "https://goout.net/i/071/715867-%%%.jpg"
+                    },
+                    {
+                      "id": 715864,
+                      "src": "https://goout.net/i/071/715864-%%%.jpg"
+                    },
+                    {
+                      "id": 733104,
+                      "src": "https://goout.net/i/073/733104-%%%.jpg"
+                    }
+                  ],
+                  "videos": [],
+                  "mainImage": {
+                    "id": 715863,
+                    "src": "https://goout.net/i/071/715863-%%%.jpg"
+                  },
+                  "keywords": "ceny apollo 2018 hudebni cena ceske kritiky music awards",
+                  "score": 2300,
+                  "performerIds": [
+                    2259851,
+                    2248815,
+                    930,
+                    2196682,
+                    4794
+                  ],
+                  "innerEventsCount": 0,
+                  "nameNote": "",
+                  "category": {
+                    "id": 20,
+                    "name": "Other events",
+                    "enum": "IN_CITY"
+                  },
+                  "contacts": [],
+                  "priority": 3,
+                  "recommended": "RECOMMENDED",
+                  "tags": [
+                    "Alternative",
+                    "Alternative/Indie",
+                    "Ambient",
+                    "Classical",
+                    "Electronic",
+                    "Rock"
+                  ],
+                  "innerScheduleIds": []
+                }
+              },
+              "limit": 1
+            }
 
-+ Attributes (Common Events Params)
+## GET /services/feeder/v1/events.json?category={category}&genres={genres}&locality={locality}
+
++ Parameters
     + category (number)
     + genres (string[])
     + locality (string)
+
++ Attributes (Common Events Params)
     + schedule (string, optional)
     + scheduleTag (string, optional)
 
 + Response 200 (application/json)
     + Attributes (Events Response)
 
-### Per innerEventsForEvent [GET]
+## GET /services/feeder/v1/events.json?innerEventsForEvent={eventId}
+
++ Parameters
+    + eventId (number)
 
 + Attributes (Common Events Params)
-    + innerEventsForEvent (number)
 
 + Response 200 (application/json)
     + Attributes (Events Response)
 
-### Per performer [GET]
+## GET /services/feeder/v1/events.json?performer={performerId}
+
++ Parameters
+    + performerId (number)
 
 + Attributes (Common Events Params)
-    + performer (number)
 
 + Response 200 (application/json)
     + Attributes (Events Response)
 
-### Per keywords [GET]
+## GET /services/feeder/v1/events.json?keywords={keywords}
 
-+ Attributes (Common Events Params)
++ Parameters
     + keywords (string)
+
++ Attributes (Common Events Params)
 
 + Response 200 (application/json)
     + Attributes (Events Response)
@@ -485,11 +1183,12 @@ Get events.
 
 + source: strohel.eu (string, required)
 + forceSortByStart: ASC|DESC (string, optional)
++ tag: liked|recommended (string, required) - what kind of relation this is (possibly incomplete list mentioned)
 + before (string, optional)
 + after (string, optional)
-+ tag (string, optional)
 + unapproved (boolean, optional)
 + page (number, optional)
++ límit (number, optional)
 
 ## Common Response Attributes (object)
 
@@ -502,4 +1201,18 @@ Get events.
         + OK
         + UNAUTHORIZED
 
-## Events Response (Common Response Attributes)
+## Paged Response Attributes (Common Response Attributes)
+
++ page: 1 (number)
++ limit: 100 (number)
++ hasNext: true (boolean)
+
+## Schedule
++ id (number)
+
+## Events Response (Paged Response Attributes)
+
++ schedule (array[Schedule])
++ venues (object)
++ performers (object)
++ events (object)
