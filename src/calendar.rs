@@ -1,4 +1,5 @@
 use crate::goout_api;
+use icalendar::{self, Calendar, Component};
 use reqwest::Client;
 use rocket::get;
 use std::error::Error;
@@ -15,6 +16,21 @@ pub(in crate) struct Event {
     pub address_locality: String,
 }
 
+impl Event {
+    fn to_icalendar(self: &Event) -> HandlerResult<icalendar::Event> {
+        eprintln!("Parsing '{:?}'...", self);
+        let mut ical_event = icalendar::Event::new();
+        ical_event.summary(&self.name);
+//         ical_event.starts(self.start_time);
+//         if let Some(end_time) = self.end_time {
+//             ical_event.ends(end_time);
+//         }
+        // TODO: venue, address...
+        eprintln!("Parsed as\n{}", ical_event.to_string());
+        Ok(ical_event)
+    }
+}
+
 #[get("/services/feeder/usercalendar.ics?<id>")]
 pub(in crate) fn serve(id: u64) -> HandlerResult<String> {
     let client = Client::new();
@@ -25,16 +41,18 @@ pub(in crate) fn serve(id: u64) -> HandlerResult<String> {
     // infrequently and in non-interactive manner. Advantage is that we can
     // properly report errors on HTTP level, and siplicity. Disadvantage is
     // high latency of first byte served.
-    let mut events = Vec::new();
+    let mut calendar = Calendar::new();
     for page in 1.. {
         let json = goout_api::fetch_page(&client, id, page)?;
         let (html_str, has_next) = goout_api::parse_json_reply(&json)?;
-        events.extend(goout_api::parse_events_html(html_str)?);
+        for event in goout_api::parse_events_html(html_str)? {
+            calendar.push(event.to_icalendar()?);
+        }
 
         if !has_next {
             break;
         }
     }
 
-    Ok(events.iter().map(|x| format!("{:?}\n", x)).collect())
+    Ok(calendar.to_string())
 }
