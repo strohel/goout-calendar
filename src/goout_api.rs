@@ -1,13 +1,13 @@
 use crate::calendar::HandlerResult;
 use chrono::{DateTime, FixedOffset};
-use icalendar::{Component, Event};
+use icalendar::{Component, Event as IcalEvent};
 use reqwest::Client;
 use serde::Deserialize;
 use std::collections::HashMap;
 
 const ENDPOINT_URL: &str = "https://goout.net/services/feeder/v1/events.json";
 
-#[derive(Deserialize)]
+#[derive(Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
 struct Schedule {
     event_id: u64,
@@ -25,13 +25,13 @@ struct Schedule {
 }
 
 #[derive(Deserialize)]
-struct Country {
+struct NamedEntity {
     name: String,
 }
 
 #[derive(Deserialize)]
 struct Locality {
-    country: Country,
+    country: NamedEntity,
 }
 
 #[derive(Deserialize)]
@@ -42,6 +42,19 @@ struct Venue {
     latitude: f64,   // 50.0533,
     longitude: f64,  // 14.4082,
     locality: Locality,
+}
+
+#[derive(Deserialize)]
+struct Performer {
+    // TODO
+}
+
+#[derive(Deserialize)]
+struct Event {
+    name: String, // "Hudební ceny Apollo 2018",
+    text: String, // Apollo Czech Music Critics Awards for ..."
+    category: NamedEntity,
+    tags: Vec<String>, // "Alternative/Indie", "Ambient", "Classical"
 }
 
 #[derive(Deserialize)]
@@ -57,6 +70,10 @@ pub(in crate) struct EventsResponse {
     schedule: Vec<Schedule>,
     #[serde(default)]
     venues: HashMap<u64, Venue>,
+    #[serde(default)]
+    performers: HashMap<u64, Performer>,
+    #[serde(default)]
+    events: HashMap<u64, Event>,
 }
 
 impl EventsResponse {
@@ -90,13 +107,13 @@ pub(in crate) fn fetch_page(client: &Client, id: u64, page: u8) -> HandlerResult
     Ok(response)
 }
 
-pub(in crate) fn generate_events(response: &EventsResponse) -> HandlerResult<Vec<Event>> {
-    let mut events: Vec<Event> = Vec::new();
+pub(in crate) fn generate_events(response: &EventsResponse) -> HandlerResult<Vec<IcalEvent>> {
+    let mut events: Vec<IcalEvent> = Vec::new();
     for schedule in response.schedule.iter() {
-        let mut ical_event = Event::new();
-        ical_event.summary(&format!("{}: {}", schedule.event_id, schedule.url));
+        let mut ical_event = IcalEvent::new();
         ical_event.starts(schedule.start);
         ical_event.ends(schedule.end);
+        ical_event.add_property("URL", &schedule.url); // TODO: Google Calendar ignores this
 
         let venue = response.venues.get(&schedule.venue_id).ok_or("No venue")?;
         ical_event.location(&format!(
@@ -105,6 +122,12 @@ pub(in crate) fn generate_events(response: &EventsResponse) -> HandlerResult<Vec
         ));
         ical_event.add_property("GEO", &format!("{};{}", venue.latitude, venue.longitude));
 
+        let event = response.events.get(&schedule.event_id).ok_or("No event")?;
+        ical_event.summary(&format!("{} ({})", event.name, event.category.name));
+        ical_event.description(&event.text);
+
+        eprintln!("Parsed {:?} as:", schedule);
+        eprintln!("{}", ical_event.to_string());
         events.push(ical_event);
     }
     Ok(events)
