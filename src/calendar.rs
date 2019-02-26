@@ -1,5 +1,5 @@
 use crate::goout_api;
-use icalendar::{Calendar};
+use icalendar::Calendar;
 use reqwest::Client;
 use rocket::get;
 use std::error::Error;

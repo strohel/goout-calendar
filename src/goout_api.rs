@@ -1,8 +1,9 @@
-use crate::calendar::{HandlerResult};
+use crate::calendar::HandlerResult;
 use chrono::{DateTime, FixedOffset};
 use icalendar::{Component, Event};
 use reqwest::Client;
 use serde::Deserialize;
+use std::collections::HashMap;
 
 const ENDPOINT_URL: &str = "https://goout.net/services/feeder/v1/events.json";
 
@@ -24,6 +25,26 @@ struct Schedule {
 }
 
 #[derive(Deserialize)]
+struct Country {
+    name: String,
+}
+
+#[derive(Deserialize)]
+struct Locality {
+    country: Country,
+}
+
+#[derive(Deserialize)]
+struct Venue {
+    name: String,    // "MeetFactory"
+    address: String, // "Ke Sklárně 15",
+    city: String,    // "Praha 5",
+    latitude: f64,   // 50.0533,
+    longitude: f64,  // 14.4082,
+    locality: Locality,
+}
+
+#[derive(Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub(in crate) struct EventsResponse {
     status: u16,
@@ -34,6 +55,8 @@ pub(in crate) struct EventsResponse {
     pub has_next: bool,
     #[serde(default)]
     schedule: Vec<Schedule>,
+    #[serde(default)]
+    venues: HashMap<u64, Venue>,
 }
 
 impl EventsResponse {
@@ -48,11 +71,7 @@ impl EventsResponse {
     }
 }
 
-pub(in crate) fn fetch_page(
-    client: &Client,
-    id: u64,
-    page: u8,
-) -> HandlerResult<EventsResponse> {
+pub(in crate) fn fetch_page(client: &Client, id: u64, page: u8) -> HandlerResult<EventsResponse> {
     let params = &[
         ("tag", "liked"),
         ("user", &id.to_string()),
@@ -77,7 +96,15 @@ pub(in crate) fn generate_events(response: &EventsResponse) -> HandlerResult<Vec
         let mut ical_event = Event::new();
         ical_event.summary(&format!("{}: {}", schedule.event_id, schedule.url));
         ical_event.starts(schedule.start);
-        ical_event.ends(schedule.start);
+        ical_event.ends(schedule.end);
+
+        let venue = response.venues.get(&schedule.venue_id).ok_or("No venue")?;
+        ical_event.location(&format!(
+            "{}, {}, {}, {}",
+            venue.name, venue.address, venue.city, venue.locality.country.name
+        ));
+        ical_event.add_property("GEO", &format!("{};{}", venue.latitude, venue.longitude));
+
         events.push(ical_event);
     }
     Ok(events)
