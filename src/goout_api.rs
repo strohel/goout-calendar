@@ -1,4 +1,5 @@
 use crate::calendar::{HandlerResult};
+use chrono::{DateTime, FixedOffset};
 use icalendar::{Component, Event};
 use reqwest::Client;
 use serde::Deserialize;
@@ -10,6 +11,16 @@ const ENDPOINT_URL: &str = "https://goout.net/services/feeder/v1/events.json";
 struct Schedule {
     event_id: u64,
     url: String,
+    cancelled: bool,
+    #[serde(rename = "startISO8601")]
+    start: DateTime<FixedOffset>,
+    #[serde(rename = "endISO8601")]
+    end: DateTime<FixedOffset>,
+    pricing: String,
+    source_urls: Vec<String>,
+    timezone: String,
+    venue_id: u64,
+    performer_ids: Vec<u64>,
 }
 
 #[derive(Deserialize)]
@@ -63,9 +74,11 @@ pub(in crate) fn fetch_page(
 pub(in crate) fn generate_events(response: &EventsResponse) -> HandlerResult<Vec<Event>> {
     let mut events: Vec<Event> = Vec::new();
     for schedule in response.schedule.iter() {
-        let mut event = Event::new();
-        event.summary(&format!("{}: {}", schedule.event_id, schedule.url));
-        events.push(event);
+        let mut ical_event = Event::new();
+        ical_event.summary(&format!("{}: {}", schedule.event_id, schedule.url));
+        ical_event.starts(schedule.start);
+        ical_event.ends(schedule.start);
+        events.push(ical_event);
     }
     Ok(events)
 }
