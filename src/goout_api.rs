@@ -106,7 +106,7 @@ pub(in crate) fn fetch_page(
         ("tag", "liked"),
         ("user", user_str),
         ("page", page_str),
-        ("source", "strohel.eu"),
+        ("source", "goout.strohel.eu"),
     ];
     if let Some(after) = after_opt {
         params.push(("after", &after));
