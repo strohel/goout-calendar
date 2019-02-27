@@ -8,7 +8,7 @@
 <body>
   <h1>GoOut Calendar Exporter</h1>
   <p>
-    This is a simple proxy Web service that serves events of a given
+    This is a simple proxy Web service that serves saved events of a given
     user of <a href="https://goout.net/">GoOut.net</a> in an iCalendar
     format. See
     <a href="https://github.com/strohel/goout-calendar">homepage on
@@ -29,14 +29,24 @@
   <form>
     <p>Paste your textual GoOut ID here:</p>
     <p>
-      <input type="text" oninput="idChanged(this.value)" placeholder="GoOut ID, e.g. ydtc">
+      <input id="id" type="text" oninput="inputChanged()" placeholder="GoOut ID, e.g. ydtc">
+    </p>
+    <p>Show GoOut events since:</p>
+    <p>
+      <select id="after" onchange="inputChanged()">
+        <option value="2016-01-01">2016</option>
+        <option value="2017-01-01">2017</option>
+        <option value="2018-01-01">2018</option>
+        <option value="2019-01-01">2019</option>
+        <option value="" selected>the day of calendar retrieval</option>
+      </select>
     </p>
     <p>
-      <input id='input-http' type="url" placeholder="HTTP URL to iCalendar" size=60 readonly>
+      <input id='input-http' type="url" placeholder="HTTP URL to iCalendar" size=70 readonly>
       <a id='a-http' href=#>http link</a>
     </p>
     <p>
-      <input id='input-webcal' type="url" placeholder="WEBCAL URL to iCalendar" size=60 readonly>
+      <input id='input-webcal' type="url" placeholder="WEBCAL URL to iCalendar" size=70 readonly>
       <a id='a-webcal' href=#>webcal link</a>
     </p>
   </form>

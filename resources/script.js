@@ -1,4 +1,5 @@
-function idChanged(value) {
+function inputChanged() {
+    var value = document.getElementById("id").value;
     if (value == "") {
         setUrls("", "");
         return;
@@ -13,8 +14,14 @@ function idChanged(value) {
         return;
     }
 
-    // webcal://goout.net/services/feeder/usercalendar.ics?id=43224
+    // webcal://goout.net/services/feeder/usercalendar.ics?id=43224?...
     var http_url = window.location.href + "services/feeder/usercalendar.ics?id=" + id;
+
+    var after_value = document.getElementById("after").value;
+    if (after_value) {
+        http_url += "&after=" + after_value;
+    }
+
     var webcal_url = http_url.replace(/^https?/, "webcal");
     setUrls(http_url, webcal_url);
 }

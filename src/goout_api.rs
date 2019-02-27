@@ -3,6 +3,7 @@ use chrono::{DateTime, FixedOffset};
 use icalendar::{Component, Event as IcalEvent};
 use reqwest::Client;
 use serde::Deserialize;
+use serde_json::Value;
 use std::{
     collections::{BTreeMap, HashMap},
     fmt::Write,
@@ -67,7 +68,7 @@ struct Event {
 #[serde(rename_all = "camelCase")]
 pub(in crate) struct EventsResponse {
     status: u16,
-    message: String,
+    message: Value,
     // use defaults for all other fields as error responses don't have them filled in and we want
     // better error message than failure to parse all keys from JSON.
     #[serde(default)]
@@ -94,22 +95,29 @@ impl EventsResponse {
     }
 }
 
-pub(in crate) fn fetch_page(client: &Client, id: u64, page: u8) -> HandlerResult<EventsResponse> {
-    let params = &[
+pub(in crate) fn fetch_page(
+    client: &Client,
+    id: u64,
+    after_opt: &Option<String>,
+    page: u8,
+) -> HandlerResult<EventsResponse> {
+    let (user_str, page_str) = (&id.to_string(), &page.to_string());
+    let mut params = vec![
         ("tag", "liked"),
-        ("user", &id.to_string()),
-        ("page", &page.to_string()),
+        ("user", user_str),
+        ("page", page_str),
         ("source", "strohel.eu"),
     ];
+    if let Some(after) = after_opt {
+        params.push(("after", &after));
+    }
 
-    let mut raw_response = client
-        .get(ENDPOINT_URL)
-        .query(params)
-        .send()?
-        .error_for_status()?;
+    let mut raw_response = client.get(ENDPOINT_URL).query(&params).send()?;
     eprintln!("Retrieved {}.", raw_response.url());
     let response: EventsResponse = raw_response.json()?;
     response.error_for_status()?;
+    // we call this on raw_response later, because that way we get better error message
+    raw_response.error_for_status()?;
     Ok(response)
 }
 
