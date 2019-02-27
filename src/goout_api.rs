@@ -3,7 +3,10 @@ use chrono::{DateTime, FixedOffset};
 use icalendar::{Component, Event as IcalEvent};
 use reqwest::Client;
 use serde::Deserialize;
-use std::collections::{BTreeMap, HashMap};
+use std::{
+    collections::{BTreeMap, HashMap},
+    fmt::Write,
+};
 
 const ENDPOINT_URL: &str = "https://goout.net/services/feeder/v1/events.json";
 
@@ -49,7 +52,8 @@ struct Venue {
 
 #[derive(Deserialize)]
 struct Performer {
-    // TODO
+    name: String,
+    tags: Vec<String>,
 }
 
 #[derive(Deserialize)]
@@ -57,7 +61,6 @@ struct Event {
     name: String,                           // "Hudební ceny Apollo 2018",
     text: String,                           // Apollo Czech Music Critics Awards for ..."
     categories: BTreeMap<u64, NamedEntity>, // BTreeMap because we want stable order
-    tags: Vec<String>,                      // "Alternative/Indie", "Ambient", "Classical"
 }
 
 #[derive(Deserialize)]
@@ -116,7 +119,7 @@ pub(in crate) fn generate_events(response: &EventsResponse) -> HandlerResult<Vec
         let mut ical_event = IcalEvent::new();
         ical_event.starts(schedule.start);
         ical_event.ends(schedule.end);
-        ical_event.add_property("URL", &schedule.url); // TODO: Google Calendar ignores this
+        ical_event.add_property("URL", &schedule.url);
 
         let venue = response.venues.get(&schedule.venue_id).ok_or("No venue")?;
         ical_event.location(&format!(
@@ -136,7 +139,31 @@ pub(in crate) fn generate_events(response: &EventsResponse) -> HandlerResult<Vec
                 .collect::<Vec<_>>()
                 .join(", ")
         ));
-        ical_event.description(&event.text);
+
+        let mut description = String::new();
+
+        let mut performers = Vec::new();
+        for performer_id in schedule.performer_ids.iter() {
+            let performer = response
+                .performers
+                .get(&performer_id)
+                .ok_or("No performer")?;
+            let mut performer_str = performer.name.to_string();
+            if !performer.tags.is_empty() {
+                write!(performer_str, " ({})", performer.tags.join(", "))?;
+            }
+            performers.push(performer_str);
+        }
+        if !performers.is_empty() {
+            writeln!(description, "{}", performers.join(", "))?;
+        }
+
+        if !event.text.is_empty() {
+            writeln!(description, "\n{}\n", event.text)?;
+        }
+        // Google Calendar ignores URL property, add it to text
+        writeln!(description, "{}", schedule.url)?;
+        ical_event.description(description.trim());
 
         eprintln!("Parsed {:?} as:", schedule);
         eprintln!("{}", ical_event.to_string());
