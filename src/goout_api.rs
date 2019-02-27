@@ -3,7 +3,7 @@ use chrono::{DateTime, FixedOffset};
 use icalendar::{Component, Event as IcalEvent};
 use reqwest::Client;
 use serde::Deserialize;
-use std::collections::HashMap;
+use std::collections::{BTreeMap, HashMap};
 
 const ENDPOINT_URL: &str = "https://goout.net/services/feeder/v1/events.json";
 
@@ -17,7 +17,10 @@ struct Schedule {
     start: DateTime<FixedOffset>,
     #[serde(rename = "endISO8601")]
     end: DateTime<FixedOffset>,
+    hour_ignored: bool,
+    is_long_term: bool,
     pricing: String,
+    currency: String,
     source_urls: Vec<String>,
     timezone: String,
     venue_id: u64,
@@ -51,10 +54,10 @@ struct Performer {
 
 #[derive(Deserialize)]
 struct Event {
-    name: String, // "Hudební ceny Apollo 2018",
-    text: String, // Apollo Czech Music Critics Awards for ..."
-    category: NamedEntity,
-    tags: Vec<String>, // "Alternative/Indie", "Ambient", "Classical"
+    name: String,                           // "Hudební ceny Apollo 2018",
+    text: String,                           // Apollo Czech Music Critics Awards for ..."
+    categories: BTreeMap<u64, NamedEntity>, // BTreeMap because we want stable order
+    tags: Vec<String>,                      // "Alternative/Indie", "Ambient", "Classical"
 }
 
 #[derive(Deserialize)]
@@ -123,7 +126,16 @@ pub(in crate) fn generate_events(response: &EventsResponse) -> HandlerResult<Vec
         ical_event.add_property("GEO", &format!("{};{}", venue.latitude, venue.longitude));
 
         let event = response.events.get(&schedule.event_id).ok_or("No event")?;
-        ical_event.summary(&format!("{} ({})", event.name, event.category.name));
+        ical_event.summary(&format!(
+            "{} ({})",
+            event.name,
+            event
+                .categories
+                .values()
+                .map(|c| &c.name[..]) // convert to &str, see https://stackoverflow.com/a/29026565/4345715
+                .collect::<Vec<_>>()
+                .join(", ")
+        ));
         ical_event.description(&event.text);
 
         eprintln!("Parsed {:?} as:", schedule);
