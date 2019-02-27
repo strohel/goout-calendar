@@ -6,8 +6,8 @@ use std::error::Error;
 
 pub(in crate) type HandlerResult<T> = Result<T, Box<dyn Error>>;
 
-#[get("/services/feeder/usercalendar.ics?<id>&<after>")]
-pub(in crate) fn serve(id: u64, after: Option<String>) -> HandlerResult<String> {
+#[get("/services/feeder/usercalendar.ics?<id>&<language>&<after>")]
+pub(in crate) fn serve(id: u64, language: String, after: Option<String>) -> HandlerResult<String> {
     let client = Client::new();
 
     // Normally, we would stream to output as soon as we get first page, but
@@ -18,7 +18,7 @@ pub(in crate) fn serve(id: u64, after: Option<String>) -> HandlerResult<String> 
     // high latency of first byte served.
     let mut calendar = Calendar::new();
     for page in 1.. {
-        let events_response = goout_api::fetch_page(&client, id, &after, page)?;
+        let events_response = goout_api::fetch_page(&client, id, &language, &after, page)?;
         for event in goout_api::generate_events(&events_response)? {
             calendar.push(event);
         }

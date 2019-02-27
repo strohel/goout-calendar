@@ -17,6 +17,9 @@ function inputChanged() {
     // webcal://goout.net/services/feeder/usercalendar.ics?id=43224?...
     var http_url = window.location.href + "services/feeder/usercalendar.ics?id=" + id;
 
+    var language_value = document.getElementById("language").value;
+    http_url += "&language=" + language_value;
+
     var after_value = document.getElementById("after").value;
     if (after_value) {
         http_url += "&after=" + after_value;

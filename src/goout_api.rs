@@ -98,6 +98,7 @@ impl EventsResponse {
 pub(in crate) fn fetch_page(
     client: &Client,
     id: u64,
+    language: &str,
     after_opt: &Option<String>,
     page: u8,
 ) -> HandlerResult<EventsResponse> {
@@ -106,6 +107,7 @@ pub(in crate) fn fetch_page(
         ("tag", "liked"),
         ("user", user_str),
         ("page", page_str),
+        ("language", language),
         ("source", "goout.strohel.eu"),
     ];
     if let Some(after) = after_opt {
