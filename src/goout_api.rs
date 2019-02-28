@@ -1,5 +1,5 @@
 use crate::calendar::HandlerResult;
-use chrono::{DateTime, FixedOffset};
+use chrono::{DateTime, Duration, FixedOffset};
 use icalendar::{Component, Event as IcalEvent};
 use reqwest::Client;
 use serde::Deserialize;
@@ -129,8 +129,16 @@ pub(in crate) fn generate_events(
     let mut events: Vec<IcalEvent> = Vec::new();
     for schedule in response.schedule.iter() {
         let mut ical_event = IcalEvent::new();
-        ical_event.starts(schedule.start);
-        ical_event.ends(schedule.end);
+
+        // end date(time) is exclusive in iCalendar, but apparently inclusive in GoOut API
+        let end_datetime = schedule.end + Duration::seconds(1);
+        if schedule.hour_ignored {
+            ical_event.start_date(schedule.start.date());
+            ical_event.end_date(end_datetime.date());
+        } else {
+            ical_event.starts(schedule.start);
+            ical_event.ends(end_datetime);
+        }
         ical_event.add_property("URL", &schedule.url);
         ical_event.add_property(
             "STATUS",
