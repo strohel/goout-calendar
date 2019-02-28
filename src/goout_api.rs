@@ -25,7 +25,6 @@ struct Schedule {
     is_long_term: bool,
     pricing: String,
     currency: String,
-    source_urls: Vec<String>,
     timezone: String,
     venue_id: u64,
     performer_ids: Vec<u64>,
