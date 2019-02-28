@@ -166,6 +166,9 @@ pub(in crate) fn generate_events(response: &EventsResponse) -> HandlerResult<Vec
         if !performers.is_empty() {
             writeln!(description, "{}", performers.join(", "))?;
         }
+        if !schedule.pricing.is_empty() {
+            writeln!(description, "{} {}", schedule.currency, schedule.pricing)?;
+        }
 
         if !event.text.is_empty() {
             writeln!(description, "\n{}\n", event.text)?;
