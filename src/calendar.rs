@@ -19,7 +19,7 @@ pub(in crate) fn serve(id: u64, language: String, after: Option<String>) -> Hand
     let mut calendar = Calendar::new();
     for page in 1.. {
         let events_response = goout_api::fetch_page(&client, id, &language, &after, page)?;
-        for event in goout_api::generate_events(&events_response)? {
+        for event in goout_api::generate_events(&events_response, &language)? {
             calendar.push(event);
         }
 

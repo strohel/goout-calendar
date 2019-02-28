@@ -122,13 +122,32 @@ pub(in crate) fn fetch_page(
     Ok(response)
 }
 
-pub(in crate) fn generate_events(response: &EventsResponse) -> HandlerResult<Vec<IcalEvent>> {
+pub(in crate) fn generate_events(
+    response: &EventsResponse,
+    language: &str,
+) -> HandlerResult<Vec<IcalEvent>> {
     let mut events: Vec<IcalEvent> = Vec::new();
     for schedule in response.schedule.iter() {
         let mut ical_event = IcalEvent::new();
         ical_event.starts(schedule.start);
         ical_event.ends(schedule.end);
         ical_event.add_property("URL", &schedule.url);
+        ical_event.add_property(
+            "STATUS",
+            if schedule.cancelled {
+                "CANCELLED"
+            } else {
+                "CONFIRMED"
+            },
+        );
+        let summary_prefix = if schedule.cancelled {
+            match language {
+                "cs" => "Zrušeno: ",
+                _ => "Cancelled: ",
+            }
+        } else {
+            ""
+        };
 
         let venue = response.venues.get(&schedule.venue_id).ok_or("No venue")?;
         ical_event.location(&format!(
@@ -139,7 +158,8 @@ pub(in crate) fn generate_events(response: &EventsResponse) -> HandlerResult<Vec
 
         let event = response.events.get(&schedule.event_id).ok_or("No event")?;
         ical_event.summary(&format!(
-            "{} ({})",
+            "{}{} ({})",
+            summary_prefix,
             event.name,
             event
                 .categories
