@@ -22,10 +22,10 @@ struct Schedule {
     #[serde(rename = "endISO8601")]
     end: DateTime<FixedOffset>,
     hour_ignored: bool,
-    is_long_term: bool,
+    is_long_term: bool, // TODO: use
     pricing: String,
     currency: String,
-    timezone: String,
+    timezone: String, // TODO: use
     venue_id: u64,
     performer_ids: Vec<u64>,
 }
@@ -141,6 +141,7 @@ pub(in crate) fn generate_events(
             },
         );
         let summary_prefix = if schedule.cancelled {
+            // TODO: poor man's localisation
             match language {
                 "cs" => "Zrušeno: ",
                 _ => "Cancelled: ",
