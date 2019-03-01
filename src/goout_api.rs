@@ -206,8 +206,12 @@ pub(in crate) fn generate_events(
         writeln!(description, "{}", schedule.url)?;
         ical_event.description(description.trim());
 
-        eprintln!("Parsed {:?} as:", schedule);
-        eprintln!("{}", ical_event.to_string());
+        #[cfg(debug_assertions)]
+        {
+            eprintln!("Parsed {:?} as:", schedule);
+            eprintln!("{}", ical_event.to_string());
+        }
+
         events.push(ical_event);
     }
     Ok(events)
