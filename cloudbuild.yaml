@@ -4,5 +4,16 @@ steps:
   timeout: 900s
 - name: 'gcr.io/cloud-builders/docker'
   args: ['push', 'gcr.io/$PROJECT_ID/goout-calendar:$SHORT_SHA']
+# Generate kubernetes.yaml with variables filled-in. nginx is an arbitrary
+# well-known image that contains the needed envsubst command:
+- name: 'nginx'
+  args: ['sh', '-c', 'envsubst < kubernetes.envsubst.yaml > kubernetes.yaml']
+  env:
+  - 'IMAGE_TAG=$SHORT_SHA'
+- name: 'gcr.io/cloud-builders/kubectl'
+  args: ['apply', '--prune', '-l', 'app=goout-calendar', '-f', 'kubernetes.yaml']
+  env:
+  - 'CLOUDSDK_COMPUTE_ZONE=us-east1-b'
+  - 'CLOUDSDK_CONTAINER_CLUSTER=goout-calendar'
 images: ['gcr.io/$PROJECT_ID/goout-calendar:$SHORT_SHA']
 timeout: 1000s
