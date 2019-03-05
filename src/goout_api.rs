@@ -124,91 +124,99 @@ pub(in crate) fn generate_events(
 ) -> HandlerResult<Vec<IcalEvent>> {
     let mut events: Vec<IcalEvent> = Vec::new();
     for schedule in response.schedule.iter() {
-        let mut ical_event = IcalEvent::new();
-
-        // end date(time) is exclusive in iCalendar, but apparently inclusive in GoOut API
-        let end_datetime = schedule.end + Duration::seconds(1);
-        if schedule.hour_ignored {
-            ical_event.start_date(schedule.start.date());
-            ical_event.end_date(end_datetime.date());
-        } else {
-            ical_event.starts(schedule.start);
-            ical_event.ends(end_datetime);
-        }
-        ical_event.add_property("URL", &schedule.url);
-        ical_event.add_property(
-            "STATUS",
-            if schedule.cancelled {
-                "CANCELLED"
-            } else {
-                "CONFIRMED"
-            },
-        );
-        let summary_prefix = if schedule.cancelled {
-            // TODO: poor man's localisation
-            match language {
-                "cs" => "Zrušeno: ",
-                _ => "Cancelled: ",
-            }
-        } else {
-            ""
-        };
-
-        let venue = response.venues.get(&schedule.venue_id).ok_or("No venue")?;
-        ical_event.location(&format!(
-            "{}, {}, {}, {}",
-            venue.name, venue.address, venue.city, venue.locality.country.name
-        ));
-        ical_event.add_property("GEO", &format!("{};{}", venue.latitude, venue.longitude));
-
-        let event = response.events.get(&schedule.event_id).ok_or("No event")?;
-        ical_event.summary(&format!(
-            "{}{} ({})",
-            summary_prefix,
-            event.name,
-            event
-                .categories
-                .values()
-                .map(|c| &c.name[..]) // convert to &str, see https://stackoverflow.com/a/29026565/4345715
-                .collect::<Vec<_>>()
-                .join(", ")
-        ));
-
-        let mut description = String::new();
-
-        let mut performers = Vec::new();
-        for performer_id in schedule.performer_ids.iter() {
-            let performer = response
-                .performers
-                .get(&performer_id)
-                .ok_or("No performer")?;
-            let mut performer_str = performer.name.to_string();
-            if !performer.tags.is_empty() {
-                write!(performer_str, " ({})", performer.tags.join(", "))?;
-            }
-            performers.push(performer_str);
-        }
-        if !performers.is_empty() {
-            writeln!(description, "{}", performers.join(", "))?;
-        }
-        if !schedule.pricing.is_empty() {
-            writeln!(description, "{} {}", schedule.currency, schedule.pricing)?;
-        }
-
-        if !event.text.is_empty() {
-            writeln!(description, "\n{}\n", event.text)?;
-        }
-        // Google Calendar ignores URL property, add it to text
-        writeln!(description, "{}", schedule.url)?;
-        ical_event.description(description.trim());
-
+        let ical_event = create_ical_event(schedule, language, response)?;
         #[cfg(debug_assertions)]
         {
             eprintln!("Parsed {:?} as:", schedule);
             eprintln!("{}", ical_event.to_string());
         }
-
         events.push(ical_event);
     }
     Ok(events)
+}
+
+fn create_ical_event(
+    schedule: &Schedule,
+    language: &str,
+    response: &EventsResponse,
+) -> HandlerResult<IcalEvent> {
+    let mut ical_event = IcalEvent::new();
+
+    // end date(time) is exclusive in iCalendar, but apparently inclusive in GoOut API
+    let end_datetime = schedule.end + Duration::seconds(1);
+    if schedule.hour_ignored {
+        ical_event.start_date(schedule.start.date());
+        ical_event.end_date(end_datetime.date());
+    } else {
+        ical_event.starts(schedule.start);
+        ical_event.ends(end_datetime);
+    }
+    ical_event.add_property("URL", &schedule.url);
+    ical_event.add_property(
+        "STATUS",
+        if schedule.cancelled {
+            "CANCELLED"
+        } else {
+            "CONFIRMED"
+        },
+    );
+    let summary_prefix = if schedule.cancelled {
+        // TODO: poor man's localisation
+        match language {
+            "cs" => "Zrušeno: ",
+            _ => "Cancelled: ",
+        }
+    } else {
+        ""
+    };
+
+    let venue = response.venues.get(&schedule.venue_id).ok_or("No venue")?;
+    ical_event.location(&format!(
+        "{}, {}, {}, {}",
+        venue.name, venue.address, venue.city, venue.locality.country.name
+    ));
+    ical_event.add_property("GEO", &format!("{};{}", venue.latitude, venue.longitude));
+
+    let event = response.events.get(&schedule.event_id).ok_or("No event")?;
+    ical_event.summary(&format!(
+        "{}{} ({})",
+        summary_prefix,
+        event.name,
+        event
+            .categories
+            .values()
+            .map(|c| &c.name[..]) // convert to &str, see https://stackoverflow.com/a/29026565/4345715
+            .collect::<Vec<_>>()
+            .join(", ")
+    ));
+
+    let mut description = String::new();
+
+    let mut performers = Vec::new();
+    for performer_id in schedule.performer_ids.iter() {
+        let performer = response
+            .performers
+            .get(&performer_id)
+            .ok_or("No performer")?;
+        let mut performer_str = performer.name.to_string();
+        if !performer.tags.is_empty() {
+            write!(performer_str, " ({})", performer.tags.join(", "))?;
+        }
+        performers.push(performer_str);
+    }
+    if !performers.is_empty() {
+        writeln!(description, "{}", performers.join(", "))?;
+    }
+    if !schedule.pricing.is_empty() {
+        writeln!(description, "{} {}", schedule.currency, schedule.pricing)?;
+    }
+
+    if !event.text.is_empty() {
+        writeln!(description, "\n{}\n", event.text)?;
+    }
+    // Google Calendar ignores URL property, add it to text
+    writeln!(description, "{}", schedule.url)?;
+    ical_event.description(description.trim());
+
+    Ok(ical_event)
 }
