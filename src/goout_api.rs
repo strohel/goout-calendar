@@ -182,8 +182,9 @@ fn create_ical_event(
         writeln!(description, "{} {}", schedule.currency, schedule.pricing)?;
     }
 
-    if !event.text.is_empty() {
-        writeln!(description, "\n{}\n", event.text)?;
+    let trimmed_text = event.text.trim();
+    if !trimmed_text.is_empty() {
+        writeln!(description, "\n{}\n", trimmed_text)?;
     }
     // Google Calendar ignores URL property, add it to text
     writeln!(description, "{}", schedule.url)?;
