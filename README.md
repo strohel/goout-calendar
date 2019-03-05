@@ -19,8 +19,8 @@ iteract with GoOut API.
 
 ## Build and Deploy
 
-As Rocket
-[requires nightly (actually just 1.31+ devel build of) Rust](https://github.com/SergioBenitez/Rocket/issues/19), so does goout-calendar.
+Goout-calendar requires Rust 1.33+, but the Rocket dependency
+[requires nightly or devel Rust build](https://github.com/SergioBenitez/Rocket/issues/19).
 
 If you install Rust toolchain locally, you can `cargo build`, `cargo run` etc.
 

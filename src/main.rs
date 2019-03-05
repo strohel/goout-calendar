@@ -1,4 +1,4 @@
-#![feature(decl_macro, proc_macro_hygiene, transpose_result)]
+#![feature(decl_macro, proc_macro_hygiene)]
 
 use rocket::routes;
 
