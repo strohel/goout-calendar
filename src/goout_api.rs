@@ -161,34 +161,7 @@ fn create_ical_event(
 
     let event = response.events.get(&schedule.event_id).ok_or("No event")?;
     set_summary(&mut ical_event, event, schedule.cancelled, language);
-
-    let mut description = String::new();
-    let mut performers = Vec::new();
-    for performer_id in schedule.performer_ids.iter() {
-        let performer = response
-            .performers
-            .get(&performer_id)
-            .ok_or("No performer")?;
-        let mut performer_str = performer.name.to_string();
-        if !performer.tags.is_empty() {
-            write!(performer_str, " ({})", performer.tags.join(", "))?;
-        }
-        performers.push(performer_str);
-    }
-    if !performers.is_empty() {
-        writeln!(description, "{}", performers.join(", "))?;
-    }
-    if !schedule.pricing.is_empty() {
-        writeln!(description, "{} {}", schedule.currency, schedule.pricing)?;
-    }
-
-    let trimmed_text = event.text.trim();
-    if !trimmed_text.is_empty() {
-        writeln!(description, "\n{}\n", trimmed_text)?;
-    }
-    // Google Calendar ignores URL property, add it to text
-    writeln!(description, "{}", schedule.url)?;
-    ical_event.description(description.trim());
+    set_description(&mut ical_event, schedule, event, &response.performers)?;
 
     Ok(ical_event)
 }
@@ -231,4 +204,39 @@ fn set_summary(ical_event: &mut IcalEvent, event: &Event, cancelled: bool, langu
             .collect::<Vec<_>>()
             .join(", ")
     ));
+}
+
+fn set_description(
+    ical_event: &mut IcalEvent,
+    schedule: &Schedule,
+    event: &Event,
+    performers: &HashMap<u64, Performer>,
+) -> HandlerResult<()> {
+    let mut description = String::new();
+
+    let mut performer_names = Vec::new();
+    for performer_id in schedule.performer_ids.iter() {
+        let performer = performers.get(&performer_id).ok_or("No performer")?;
+        let mut performer_str = performer.name.to_string();
+        if !performer.tags.is_empty() {
+            write!(performer_str, " ({})", performer.tags.join(", "))?;
+        }
+        performer_names.push(performer_str);
+    }
+    if !performer_names.is_empty() {
+        writeln!(description, "{}", performer_names.join(", "))?;
+    }
+
+    if !schedule.pricing.is_empty() {
+        writeln!(description, "{} {}", schedule.currency, schedule.pricing)?;
+    }
+
+    let trimmed_text = event.text.trim();
+    if !trimmed_text.is_empty() {
+        writeln!(description, "\n{}\n", trimmed_text)?;
+    }
+    // Google Calendar ignores URL property, add it to text
+    writeln!(description, "{}", schedule.url)?;
+    ical_event.description(description.trim());
+    Ok(())
 }
