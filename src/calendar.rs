@@ -1,13 +1,17 @@
 use crate::goout_api;
 use icalendar::Calendar;
 use reqwest::Client;
-use rocket::get;
+use rocket::{get, http::ContentType, response::Content};
 use std::error::Error;
 
 pub(in crate) type HandlerResult<T> = Result<T, Box<dyn Error>>;
 
 #[get("/services/feeder/usercalendar.ics?<id>&<language>&<after>")]
-pub(in crate) fn serve(id: u64, language: String, after: Option<String>) -> HandlerResult<String> {
+pub(in crate) fn serve(
+    id: u64,
+    language: String,
+    after: Option<String>,
+) -> HandlerResult<Content<String>> {
     let client = Client::new();
 
     // Normally, we would stream to output as soon as we get first page, but
@@ -28,5 +32,5 @@ pub(in crate) fn serve(id: u64, language: String, after: Option<String>) -> Hand
         }
     }
 
-    Ok(calendar.to_string())
+    Ok(Content(ContentType::Calendar, calendar.to_string()))
 }
