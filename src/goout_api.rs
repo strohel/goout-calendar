@@ -43,10 +43,10 @@ struct Locality {
 #[derive(Deserialize)]
 struct Venue {
     name: String,    // "MeetFactory"
-    address: String, // "Ke Sklárně 15",
-    city: String,    // "Praha 5",
-    latitude: f64,   // 50.0533,
-    longitude: f64,  // 14.4082,
+    address: String, // "Ke Sklárně 15"
+    city: String,    // "Praha 5"
+    latitude: f64,   // 50.0533
+    longitude: f64,  // 14.4082
     locality: Locality,
 }
 
@@ -58,27 +58,23 @@ struct Performer {
 
 #[derive(Deserialize)]
 struct Event {
-    name: String,                           // "Hudební ceny Apollo 2018",
-    text: String,                           // Apollo Czech Music Critics Awards for ..."
+    name: String,                           // "Hudební ceny Apollo 2018"
+    text: String,                           // "Apollo Czech Music Critics Awards for ..."
     categories: BTreeMap<u64, NamedEntity>, // BTreeMap because we want stable order
 }
 
-#[derive(Deserialize)]
-#[serde(rename_all = "camelCase")]
+// Instruct serde to use default values for fields not present when deserializing. This is because
+// error responses don't have them filled in and we want better error message than
+// "failure to parse all keys in JSON".
+#[derive(Default, Deserialize)]
+#[serde(rename_all = "camelCase", default)]
 pub(in crate) struct EventsResponse {
     status: u16,
     message: Value,
-    // use defaults for all other fields as error responses don't have them filled in and we want
-    // better error message than failure to parse all keys from JSON.
-    #[serde(default)]
     pub has_next: bool,
-    #[serde(default)]
     schedule: Vec<Schedule>,
-    #[serde(default)]
     venues: HashMap<u64, Venue>,
-    #[serde(default)]
     performers: HashMap<u64, Performer>,
-    #[serde(default)]
     events: HashMap<u64, Event>,
 }
 
