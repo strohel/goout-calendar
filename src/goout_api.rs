@@ -1,5 +1,5 @@
 use crate::calendar::HandlerResult;
-use chrono::{DateTime, Duration, FixedOffset};
+use chrono::Duration;
 use icalendar::{Component, Event as IcalEvent};
 use reqwest::Client;
 use serde::Deserialize;
@@ -8,6 +8,8 @@ use std::{
     collections::{BTreeMap, HashMap},
     fmt::Write,
 };
+
+type DateTime = chrono::DateTime<chrono::FixedOffset>;
 
 const ENDPOINT_URL: &str = "https://goout.net/services/feeder/v1/events.json";
 
@@ -18,9 +20,9 @@ struct Schedule {
     url: String,
     cancelled: bool,
     #[serde(rename = "startISO8601")]
-    start: DateTime<FixedOffset>,
+    start: DateTime,
     #[serde(rename = "endISO8601")]
-    end: DateTime<FixedOffset>,
+    end: DateTime,
     hour_ignored: bool,
     is_long_term: bool, // TODO: use
     pricing: String,
@@ -141,34 +143,14 @@ fn create_ical_event(
     response: &EventsResponse,
 ) -> HandlerResult<IcalEvent> {
     let mut ical_event = IcalEvent::new();
-
-    // end date(time) is exclusive in iCalendar, but apparently inclusive in GoOut API
-    let end_datetime = schedule.end + Duration::seconds(1);
-    if schedule.hour_ignored {
-        ical_event.start_date(schedule.start.date());
-        ical_event.end_date(end_datetime.date());
-    } else {
-        ical_event.starts(schedule.start);
-        ical_event.ends(end_datetime);
-    }
-    ical_event.add_property("URL", &schedule.url);
-    ical_event.add_property(
-        "STATUS",
-        if schedule.cancelled {
-            "CANCELLED"
-        } else {
-            "CONFIRMED"
-        },
+    set_start_end(
+        &mut ical_event,
+        schedule.hour_ignored,
+        schedule.start,
+        schedule.end,
     );
-    let summary_prefix = if schedule.cancelled {
-        // TODO: poor man's localisation
-        match language {
-            "cs" => "Zrušeno: ",
-            _ => "Cancelled: ",
-        }
-    } else {
-        ""
-    };
+    ical_event.add_property("URL", &schedule.url);
+    set_cancelled(&mut ical_event, schedule.cancelled);
 
     let venue = response.venues.get(&schedule.venue_id).ok_or("No venue")?;
     ical_event.location(&format!(
@@ -178,20 +160,9 @@ fn create_ical_event(
     ical_event.add_property("GEO", &format!("{};{}", venue.latitude, venue.longitude));
 
     let event = response.events.get(&schedule.event_id).ok_or("No event")?;
-    ical_event.summary(&format!(
-        "{}{} ({})",
-        summary_prefix,
-        event.name,
-        event
-            .categories
-            .values()
-            .map(|c| &c.name[..]) // convert to &str, see https://stackoverflow.com/a/29026565/4345715
-            .collect::<Vec<_>>()
-            .join(", ")
-    ));
+    set_summary(&mut ical_event, event, schedule.cancelled, language);
 
     let mut description = String::new();
-
     let mut performers = Vec::new();
     for performer_id in schedule.performer_ids.iter() {
         let performer = response
@@ -219,4 +190,44 @@ fn create_ical_event(
     ical_event.description(description.trim());
 
     Ok(ical_event)
+}
+
+fn set_start_end(ical_event: &mut IcalEvent, hour_ignored: bool, start: DateTime, end: DateTime) {
+    // end date(time) is exclusive in iCalendar, but apparently inclusive in GoOut API
+    let ical_end = end + Duration::seconds(1);
+    if hour_ignored {
+        ical_event.start_date(start.date());
+        ical_event.end_date(ical_end.date());
+    } else {
+        ical_event.starts(start);
+        ical_event.ends(ical_end);
+    }
+}
+
+fn set_cancelled(ical_event: &mut IcalEvent, cancelled: bool) {
+    ical_event.add_property("STATUS", if cancelled { "CANCELLED" } else { "CONFIRMED" });
+}
+
+fn set_summary(ical_event: &mut IcalEvent, event: &Event, cancelled: bool, language: &str) {
+    let summary_prefix = if cancelled {
+        // TODO: poor man's localisation
+        match language {
+            "cs" => "Zrušeno: ",
+            _ => "Cancelled: ",
+        }
+    } else {
+        ""
+    };
+
+    ical_event.summary(&format!(
+        "{}{} ({})",
+        summary_prefix,
+        event.name,
+        event
+            .categories
+            .values()
+            .map(|c| &c.name[..]) // convert to &str, see https://stackoverflow.com/a/29026565/4345715
+            .collect::<Vec<_>>()
+            .join(", ")
+    ));
 }
