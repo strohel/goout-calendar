@@ -4,13 +4,26 @@ metadata:
   name: goout-calendar
   labels:
     app: goout-calendar
+  annotations:
+    # https://cloud.google.com/kubernetes-engine/docs/how-to/container-native-load-balancing
+    cloud.google.com/neg: '{"ingress": true}'
 spec:
-  type: LoadBalancer
+  type: NodePort
   ports:
-    - port: 80
-      name: http
+  - port: 80
   selector:
     app: goout-calendar
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: goout-calendar
+  labels:
+    app: goout-calendar
+spec:
+  backend:
+    serviceName: goout-calendar
+    servicePort: 80
 ---
 apiVersion: apps/v1
 kind: Deployment
