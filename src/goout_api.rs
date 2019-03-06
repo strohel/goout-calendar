@@ -1,4 +1,4 @@
-use crate::calendar::HandlerResult;
+use crate::calendar::{CalendarRequest, HandlerResult};
 use chrono::Duration;
 use icalendar::{Component, Event as IcalEvent};
 use reqwest::Client;
@@ -94,21 +94,19 @@ impl EventsResponse {
 
 pub(in crate) fn fetch_page(
     client: &Client,
-    id: u64,
-    language: &str,
-    after_opt: &Option<String>,
+    cal_req: &CalendarRequest,
     page: u8,
 ) -> HandlerResult<EventsResponse> {
-    let (user_str, page_str) = (&id.to_string(), &page.to_string());
+    let (user_str, page_str) = (&cal_req.id.to_string(), &page.to_string());
     let mut params = vec![
         ("tag", "liked"),
         ("user", user_str),
         ("page", page_str),
-        ("language", language),
+        ("language", &cal_req.language),
         ("source", "goout.strohel.eu"),
     ];
-    if let Some(after) = after_opt {
-        params.push(("after", &after));
+    if let Some(after) = &cal_req.after {
+        params.push(("after", after));
     }
 
     let mut raw_response = client.get(ENDPOINT_URL).query(&params).send()?;
@@ -122,11 +120,11 @@ pub(in crate) fn fetch_page(
 
 pub(in crate) fn generate_events(
     response: &EventsResponse,
-    language: &str,
+    cal_req: &CalendarRequest,
 ) -> HandlerResult<Vec<IcalEvent>> {
     let mut events: Vec<IcalEvent> = Vec::new();
     for schedule in response.schedule.iter() {
-        let ical_event = create_ical_event(schedule, language, response)?;
+        let ical_event = create_ical_event(schedule, cal_req, response)?;
         #[cfg(debug_assertions)]
         {
             eprintln!("Parsed {:?} as:", schedule);
@@ -139,7 +137,7 @@ pub(in crate) fn generate_events(
 
 fn create_ical_event(
     schedule: &Schedule,
-    language: &str,
+    cal_req: &CalendarRequest,
     response: &EventsResponse,
 ) -> HandlerResult<IcalEvent> {
     let mut ical_event = IcalEvent::new();
@@ -160,7 +158,7 @@ fn create_ical_event(
     ical_event.add_property("GEO", &format!("{};{}", venue.latitude, venue.longitude));
 
     let event = response.events.get(&schedule.event_id).ok_or("No event")?;
-    set_summary(&mut ical_event, event, schedule.cancelled, language);
+    set_summary(&mut ical_event, event, schedule.cancelled, cal_req);
     set_description(&mut ical_event, schedule, event, &response.performers)?;
 
     Ok(ical_event)
@@ -182,10 +180,15 @@ fn set_cancelled(ical_event: &mut IcalEvent, cancelled: bool) {
     ical_event.add_property("STATUS", if cancelled { "CANCELLED" } else { "CONFIRMED" });
 }
 
-fn set_summary(ical_event: &mut IcalEvent, event: &Event, cancelled: bool, language: &str) {
+fn set_summary(
+    ical_event: &mut IcalEvent,
+    event: &Event,
+    cancelled: bool,
+    cal_req: &CalendarRequest,
+) {
     let summary_prefix = if cancelled {
         // TODO: poor man's localisation
-        match language {
+        match &cal_req.language[..] {
             "cs" => "Zrušeno: ",
             _ => "Cancelled: ",
         }
