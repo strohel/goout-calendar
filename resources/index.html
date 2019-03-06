@@ -27,8 +27,7 @@
 
   <h2>Get your GoOut calendar as iCal</h2>
   <form>
-    <p>Paste your textual GoOut ID here:</p>
-    <p>
+    <p>Your textual GoOut ID
       <input id="id" type="text" oninput="inputChanged()" placeholder="GoOut ID, e.g. ydtc">
     </p>
     <p>Show GoOut events since
@@ -50,13 +49,18 @@
         <option value="et">Eesti</option>
       </select>
     </p>
+    <p>Show long-term events as
+      <select id="splitLongTerm" onchange="inputChanged()">
+        <option value="" selected>long multi-day events</option>
+        <option value="split">separate events for start and end</option>
+      </select>
     <p>
-      <input id='input-http' type="url" placeholder="HTTP URL to iCalendar" size=70 readonly>
-      <a id='a-http' href=#>http link</a>
+      <input id='input-http' type="url" placeholder="HTTP URL to iCalendar" size=90 readonly>
+      <a id='a-http' href="">http link</a>
     </p>
     <p>
-      <input id='input-webcal' type="url" placeholder="WEBCAL URL to iCalendar" size=70 readonly>
-      <a id='a-webcal' href=#>webcal link</a>
+      <input id='input-webcal' type="url" placeholder="WEBCAL URL to iCalendar" size=90 readonly>
+      <a id='a-webcal' href="">webcal link</a>
     </p>
   </form>
 </body>

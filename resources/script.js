@@ -25,6 +25,11 @@ function inputChanged() {
         http_url += "&after=" + after_value;
     }
 
+    var split_value = document.getElementById("splitLongTerm").value;
+    if (split_value) {
+        http_url += "&split=true";
+    }
+
     var webcal_url = http_url.replace(/^https?/, "webcal");
     setUrls(http_url, webcal_url);
 }

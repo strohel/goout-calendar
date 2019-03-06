@@ -11,6 +11,7 @@ pub(in crate) struct CalendarRequest {
     pub id: u64,
     pub language: String,
     pub after: Option<String>,
+    pub split: bool,
 }
 
 #[get("/services/feeder/usercalendar.ics?<cal_req..>")]

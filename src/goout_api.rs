@@ -118,35 +118,61 @@ pub(in crate) fn fetch_page(
     Ok(response)
 }
 
+#[derive(Debug)]
+struct ScheduleInfo {
+    start: DateTime,
+    end: DateTime,
+    summary_prefix: &'static str,
+}
+
+fn schedule_info(start: DateTime, end: DateTime, summary_prefix: &'static str) -> ScheduleInfo {
+    ScheduleInfo {
+        start,
+        end,
+        summary_prefix,
+    }
+}
+
 pub(in crate) fn generate_events(
     response: &EventsResponse,
     cal_req: &CalendarRequest,
 ) -> HandlerResult<Vec<IcalEvent>> {
     let mut events: Vec<IcalEvent> = Vec::new();
     for schedule in response.schedule.iter() {
-        let ical_event = create_ical_event(schedule, cal_req, response)?;
-        #[cfg(debug_assertions)]
-        {
-            eprintln!("Parsed {:?} as:", schedule);
-            eprintln!("{}", ical_event.to_string());
+        let mut schedule_infos = Vec::with_capacity(2);
+        if schedule.is_long_term && cal_req.split {
+            let first_day_end = schedule.start.date().and_hms(23, 59, 59);
+            let last_day_start = schedule.end.date().and_hms(0, 0, 0);
+            let begin_prefix = match &cal_req.language[..] {
+                "cs" => "Začátek: ",
+                _ => "Begin: ",
+            };
+            let end_prefix = match &cal_req.language[..] {
+                "cs" => "Konec: ",
+                _ => "End: ",
+            };
+
+            schedule_infos.push(schedule_info(schedule.start, first_day_end, begin_prefix));
+            schedule_infos.push(schedule_info(last_day_start, schedule.end, end_prefix));
+        } else {
+            schedule_infos.push(schedule_info(schedule.start, schedule.end, ""));
         }
-        events.push(ical_event);
+
+        for info in schedule_infos {
+            events.push(create_ical_event(schedule, &info, cal_req, response)?);
+        }
     }
     Ok(events)
 }
 
 fn create_ical_event(
     schedule: &Schedule,
+    info: &ScheduleInfo,
     cal_req: &CalendarRequest,
     response: &EventsResponse,
 ) -> HandlerResult<IcalEvent> {
     let mut ical_event = IcalEvent::new();
-    set_start_end(
-        &mut ical_event,
-        schedule.hour_ignored,
-        schedule.start,
-        schedule.end,
-    );
+    set_start_end(&mut ical_event, schedule.hour_ignored, info.start, info.end);
     ical_event.add_property("URL", &schedule.url);
     set_cancelled(&mut ical_event, schedule.cancelled);
 
@@ -158,8 +184,20 @@ fn create_ical_event(
     ical_event.add_property("GEO", &format!("{};{}", venue.latitude, venue.longitude));
 
     let event = response.events.get(&schedule.event_id).ok_or("No event")?;
-    set_summary(&mut ical_event, event, schedule.cancelled, cal_req);
+    set_summary(
+        &mut ical_event,
+        event,
+        info.summary_prefix,
+        schedule.cancelled,
+        cal_req,
+    );
     set_description(&mut ical_event, schedule, event, &response.performers)?;
+
+    #[cfg(debug_assertions)]
+    {
+        eprintln!("Parsed {:?} {:?} as:", schedule, info);
+        eprintln!("{}", ical_event.to_string());
+    }
 
     Ok(ical_event)
 }
@@ -183,10 +221,11 @@ fn set_cancelled(ical_event: &mut IcalEvent, cancelled: bool) {
 fn set_summary(
     ical_event: &mut IcalEvent,
     event: &Event,
+    summary_prefix: &str,
     cancelled: bool,
     cal_req: &CalendarRequest,
 ) {
-    let summary_prefix = if cancelled {
+    let cancelled_prefix = if cancelled {
         // TODO: poor man's localisation
         match &cal_req.language[..] {
             "cs" => "Zrušeno: ",
@@ -197,8 +236,9 @@ fn set_summary(
     };
 
     ical_event.summary(&format!(
-        "{}{} ({})",
+        "{}{}{} ({})",
         summary_prefix,
+        cancelled_prefix,
         event.name,
         event
             .categories
