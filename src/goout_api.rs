@@ -26,6 +26,8 @@ struct Schedule {
     hour_ignored: bool,
     is_long_term: bool, // TODO: use
     pricing: String,
+    // rarely, some schedules don't contain currency key, e.g. qhstd
+    #[serde(default)]
     currency: String,
     timezone: String, // TODO: use
     venue_id: u64,
@@ -270,7 +272,7 @@ fn set_description(
         writeln!(description, "{}", performer_names.join(", "))?;
     }
 
-    if !schedule.pricing.is_empty() {
+    if !schedule.currency.is_empty() && !schedule.pricing.is_empty() {
         writeln!(description, "{} {}", schedule.currency, schedule.pricing)?;
     }
 
