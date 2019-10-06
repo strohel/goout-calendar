@@ -13,3 +13,35 @@ pub(in crate) fn index() -> io::Result<NamedFile> {
 pub(in crate) fn script() -> io::Result<NamedFile> {
     NamedFile::open("resources/script.js")
 }
+
+#[cfg(test)]
+mod tests {
+    use crate::rocket;
+    use rocket::http::{ContentType, Status};
+    use rocket::local::Client;
+
+    #[test]
+    fn test_index() {
+        test_static_page("/", ContentType::HTML, "<!DOCTYPE html>\n<html>");
+    }
+
+    #[test]
+    fn test_script() {
+        test_static_page(
+            "/script.js?this=is&ignored",
+            ContentType::JavaScript,
+            "function inputChanged(",
+        );
+    }
+
+    fn test_static_page(path: &str, expected_type: ContentType, expected_start: &str) {
+        let client = Client::new(rocket()).unwrap();
+        let mut response = client.get(path).dispatch();
+        assert_eq!(response.status(), Status::Ok);
+        assert_eq!(response.content_type(), Some(expected_type));
+        assert_eq!(
+            &response.body_string().unwrap()[..expected_start.len()],
+            expected_start
+        );
+    }
+}
