@@ -1,0 +1,489 @@
+{
+  "status": 200,
+  "message": "OK",
+  "hasNext": false,
+  "page": 1,
+  "schedule": [
+    {
+      "id": 5141404,
+      "announced": "2019-08-07 01:35:00",
+      "cancelled": false,
+      "currency": "EUR",
+      "endISO8601": "2020-03-02T23:59:59.000+0100",
+      "eventId": 1797468,
+      "followersCount@DEPRECATED user followerCount": 97,
+      "followersCount": 97,
+      "followerCount": 97,
+      "hourIgnore@DEPRECATED USE hourIgnored": false,
+      "hourIgnore": false,
+      "hourIgnored": false,
+      "permanent": false,
+      "pricing": "69.65",
+      "relativeFollowers": 97,
+      "relativeFollowersInWeek": 7,
+      "sourceUrls": [
+        "https://www.mercedes-benz-arena-berlin.de/events/detail/lana-del-rey-2019/2020-03-02-2000"
+      ],
+      "start": "2020-03-02 20:00:00",
+      "startISO8601": "2020-03-02T20:00:00.000+0100",
+      "state": "APPROVED",
+      "tags": [],
+      "timezone": "Europe/Prague",
+      "venueId": 36746,
+      "performerIds": [
+        27436
+      ],
+      "venueLocality": {
+        "id": 90,
+        "name": "Berlín",
+        "enum": "DE_BERLIN",
+        "new": true,
+        "country": {
+          "id": 79,
+          "name": "Německo",
+          "enum": "GERMANY",
+          "shortCode": "DE"
+        }
+      },
+      "isLongTerm": false,
+      "uploadedOnISO8601": "2019-10-06T02:34:33.000+0200",
+      "url": "https://goout.net/cs/koncerty/lana-del-rey/sxape/+egben/",
+      "followersImages": []
+    },
+    {
+      "id": 3536471,
+      "announced": "2018-05-10 10:22:00",
+      "cancelled": false,
+      "currency": "CZK",
+      "end": "2028-07-13 23:59:59",
+      "endISO8601": "2028-07-13T23:59:59.000+0200",
+      "eventId": 1152433,
+      "followersCount@DEPRECATED user followerCount": 584,
+      "followersCount": 584,
+      "followerCount": 584,
+      "hourIgnore@DEPRECATED USE hourIgnored": false,
+      "hourIgnore": false,
+      "hourIgnored": false,
+      "permanent": true,
+      "pricing": "130–300",
+      "relativeFollowers": 584,
+      "relativeFollowersInWeek": 5,
+      "sourceUrls": [
+        "http://muzeumprahy.cz/1094-mullerova-vila/"
+      ],
+      "start": "2016-01-01 12:00:00",
+      "startISO8601": "2016-01-01T12:00:00.000+0100",
+      "state": "APPROVED",
+      "tags": [],
+      "timezone": "Europe/Prague",
+      "venueId": 11672,
+      "parentVenueId": 40548,
+      "performerIds": [],
+      "venueLocality": {
+        "id": 0,
+        "name": "Praha",
+        "enum": "CZ_PRAGUE",
+        "new": false,
+        "country": {
+          "id": 115,
+          "name": "Česko",
+          "enum": "CZECH_REPUBLIC",
+          "shortCode": "CZ"
+        }
+      },
+      "isLongTerm": true,
+      "uploadedOnISO8601": "2019-10-06T02:02:35.000+0200",
+      "url": "https://goout.net/cs/vystavy/stala-expozice-mullerova-vila/iwsxc/+viibj/",
+      "followersImages": []
+    }
+  ],
+  "venues": {
+    "36746": {
+      "id": 36746,
+      "name": "Mercedes-Benz Arena",
+      "text": "",
+      "address": "Mercedes Platz 1",
+      "city": "Berlin",
+      "latitude": 52.5063,
+      "longitude": 13.4436,
+      "sourceUrl": "https://www.mercedes-benz-arena-berlin.de",
+      "followerCount": 26,
+      "followersCount": 26,
+      "panorama": false,
+      "eventCount": 42,
+      "state": "APPROVED",
+      "locality": {
+        "id": 90,
+        "name": "Berlín",
+        "enum": "DE_BERLIN",
+        "new": true,
+        "country": {
+          "id": 79,
+          "name": "Německo",
+          "enum": "GERMANY",
+          "shortCode": "DE"
+        }
+      },
+      "categories": {},
+      "mainImage": {
+        "id": 706720,
+        "src": "https://goout.net/i/070/706720-%%%.jpg"
+      },
+      "images": [
+        {
+          "id": 706720,
+          "src": "https://goout.net/i/070/706720-%%%.jpg"
+        },
+        {
+          "id": 706721,
+          "src": "https://goout.net/i/070/706721-%%%.jpg"
+        },
+        {
+          "id": 706719,
+          "src": "https://goout.net/i/070/706719-%%%.jpg"
+        }
+      ],
+      "videos": [],
+      "url": "https://goout.net/cs/koncertni-saly/mercedes-benz-arena/vtic/"
+    },
+    "40548": {
+      "id": 40548,
+      "name": "Muzeum hlavního města Prahy",
+      "text": "Muzeum hlavního města Prahy je kulturní institucí schraňující bohatý sbírkový fond věnovaný pražským dějinám, který nashromáždilo v průběhu své existence. V současné době spravuje čtrnáct objektů různého charakteru, v nichž se nacházejí jak stálé expozice, tak časově omezené výstavy. Kromě těchto výstavních prostor a kulturních památek spravuje Muzeum Prahy rozsáhlý areál odborných pracovišť v pražských Stodůlkách.",
+      "address": "Na Poříčí 1554/52",
+      "city": "Praha 8",
+      "latitude": 50.0899,
+      "longitude": 14.4383,
+      "sourceUrl": "http://muzeumprahy.cz/",
+      "followerCount": 15,
+      "followersCount": 15,
+      "panorama": false,
+      "eventCount": 44,
+      "state": "APPROVED",
+      "locality": {
+        "id": 0,
+        "name": "Praha",
+        "enum": "CZ_PRAGUE",
+        "new": false,
+        "country": {
+          "id": 115,
+          "name": "Česko",
+          "enum": "CZECH_REPUBLIC",
+          "shortCode": "CZ"
+        }
+      },
+      "categories": {
+        "23": {
+          "id": 23,
+          "name": "Muzea",
+          "enum": "MUSEUM"
+        }
+      },
+      "mainImage": {
+        "id": 592761,
+        "src": "https://goout.net/i/059/592761-%%%.jpg"
+      },
+      "images": [
+        {
+          "id": 592761,
+          "src": "https://goout.net/i/059/592761-%%%.jpg"
+        }
+      ],
+      "videos": [],
+      "url": "https://goout.net/cs/muzea/muzeum-hlavniho-mesta-prahy/xvoc/"
+    },
+    "11672": {
+      "id": 11672,
+      "name": "Müllerova vila",
+      "text": "Vila Milady a Františka Müllerových v Praze (1928–30) představuje chef-d'oeuvre světové architektonické avantgardy. Je příkladem vzácné shody mezi osvíceným klientem a geniálním architektem. František Müller, spolumajitel stavební firmy Kapsa-Müller, patřil mezi významné představitele tehdejší české společnosti.\n\nProjekt vlastního reprezentativního sídla neváhal zadat jednomu z největších architektů té doby – Adolfu Loosovi, jenž tehdy působil v Čechách. Tato zakázka Loosovi umožnila dovést jeho originální koncepci prostoru, tzv. Raumplan, k nejvyššímu vrcholu. Vybavení interiérů vily, které vybral a v mnoha případech dokonce navrhl sám architekt, ztělesňuje překvapivou harmonii moderního funkcionalismu a klasicizujícího anglického stylu. Po pohnutém osudu v poválečné době byla vila v letech 1997–2000 zrestaurována a jako Národní kulturní památka byla zpřístupněna veřejnosti.",
+      "address": "Nad Hradním vodojemem 14/642",
+      "city": "Praha 6 – Střešovice",
+      "latitude": 50.0924,
+      "longitude": 14.3785,
+      "sourceUrl": "http://www.muzeumprahy.cz/mullerova-vila/",
+      "followerCount": 22,
+      "followersCount": 22,
+      "panorama": false,
+      "parentVenueId": 40548,
+      "eventCount": 1,
+      "state": "APPROVED",
+      "locality": {
+        "id": 0,
+        "name": "Praha",
+        "enum": "CZ_PRAGUE",
+        "new": false,
+        "country": {
+          "id": 115,
+          "name": "Česko",
+          "enum": "CZECH_REPUBLIC",
+          "shortCode": "CZ"
+        }
+      },
+      "categories": {},
+      "mainImage": {
+        "id": 278895,
+        "src": "https://goout.net/i/027/278895-%%%.jpg"
+      },
+      "images": [
+        {
+          "id": 278895,
+          "src": "https://goout.net/i/027/278895-%%%.jpg"
+        },
+        {
+          "id": 278896,
+          "src": "https://goout.net/i/027/278896-%%%.jpg"
+        },
+        {
+          "id": 279353,
+          "src": "https://goout.net/i/027/279353-%%%.jpg"
+        }
+      ],
+      "videos": [],
+      "url": "https://goout.net/cs/pamatka/mullerova-vila/wqs/"
+    }
+  },
+  "performers": {
+    "27436": {
+      "id": 27436,
+      "mainCategory": {
+        "id": 46,
+        "name": "Zpěvačky",
+        "enum": "FEMALE_SINGERS"
+      },
+      "categories": [
+        {
+          "id": 46,
+          "name": "Zpěvačky",
+          "enum": "FEMALE_SINGERS"
+        },
+        {
+          "id": 38,
+          "name": "Hudebníci",
+          "enum": "MUSICIANS"
+        }
+      ],
+      "countries": [
+        {
+          "id": 105,
+          "name": "USA",
+          "enum": "USA",
+          "shortCode": "US"
+        }
+      ],
+      "eventCount": 1,
+      "followerCount": 2007,
+      "followersCount": 2007,
+      "mainImage": {
+        "id": 562798,
+        "src": "https://goout.net/i/056/562798-%%%.jpg"
+      },
+      "images": [
+        {
+          "id": 562798,
+          "src": "https://goout.net/i/056/562798-%%%.jpg"
+        },
+        {
+          "id": 532232,
+          "src": "https://goout.net/i/053/532232-%%%.jpg"
+        },
+        {
+          "id": 254492,
+          "src": "https://goout.net/i/025/254492-%%%.jpg"
+        },
+        {
+          "id": 482738,
+          "src": "https://goout.net/i/048/482738-%%%.jpg"
+        },
+        {
+          "id": 254491,
+          "src": "https://goout.net/i/025/254491-%%%.jpg"
+        },
+        {
+          "id": 487144,
+          "src": "https://goout.net/i/048/487144-%%%.jpg"
+        }
+      ],
+      "tags": [
+        "Alternativa/Indie",
+        "Dream Pop",
+        "Pop"
+      ],
+      "allTags": [
+        "Alternativa/Indie",
+        "Dream Pop",
+        "Pop"
+      ],
+      "name": "Lana Del Rey",
+      "text": "Elizabeth Grant, známá pod uměleckým pseudonymem jako Lana Del Rey, je americká zpěvačka a skladatelka. Svou druhou deskou _Born To Die_ se probojovala na vrchol většiny žebříčků a hity jako _Video Games_ nebo _Summertime Sadness_ si tou dobou ponuře prozpěvoval skoro každý. V dubnu 2017 vydala svou nejčerstvější desku _Lust for Life_, jejíž eponymní singl nazpívala spolu se stejně úspěšným umělcem The Weeknd.",
+      "entityType": "performer",
+      "sourceUrl": "http://www.lanadelrey.com/",
+      "state": "APPROVED",
+      "videos": [
+        {
+          "id": 1061840,
+          "type": "YOUTUBE",
+          "videoId": "F4ELqraXx-U",
+          "name": "Lana Del Rey – White Mustang"
+        },
+        {
+          "id": 1045159,
+          "type": "YOUTUBE",
+          "videoId": "eP4eqhWc7sI",
+          "name": "Lana Del Rey – Lust For Life"
+        },
+        {
+          "id": 1043023,
+          "type": "YOUTUBE",
+          "videoId": "3-NTv0CdFCk",
+          "name": "Lana Del Rey – Love"
+        }
+      ],
+      "url": "https://goout.net/cs/umelci/lana-del-rey/lwsb/",
+      "uploadedOnISO8601": {
+        "locale": "en_us",
+        "calendar": {
+          "year": 2019,
+          "month": 7,
+          "dayOfMonth": 8,
+          "hourOfDay": 17,
+          "minute": 37,
+          "second": 37
+        }
+      }
+    }
+  },
+  "events": {
+    "1797468": {
+      "id": 1797468,
+      "name": "Lana Del Rey",
+      "url": "https://goout.net/cs/koncerty/lana-del-rey/sxape/",
+      "state": "APPROVED",
+      "categories": {
+        "5": {
+          "id": 5,
+          "name": "Koncerty",
+          "enum": "CONCERTS"
+        }
+      },
+      "text": "",
+      "images": [
+        {
+          "id": 562798,
+          "src": "https://goout.net/i/056/562798-%%%.jpg"
+        },
+        {
+          "id": 532232,
+          "src": "https://goout.net/i/053/532232-%%%.jpg"
+        },
+        {
+          "id": 254492,
+          "src": "https://goout.net/i/025/254492-%%%.jpg"
+        },
+        {
+          "id": 482738,
+          "src": "https://goout.net/i/048/482738-%%%.jpg"
+        },
+        {
+          "id": 254491,
+          "src": "https://goout.net/i/025/254491-%%%.jpg"
+        },
+        {
+          "id": 487144,
+          "src": "https://goout.net/i/048/487144-%%%.jpg"
+        }
+      ],
+      "videos": [],
+      "mainImage": {
+        "id": 562798,
+        "src": "https://goout.net/i/056/562798-%%%.jpg"
+      },
+      "keywords": "lana del rey ray",
+      "score": 2300,
+      "performerIds": [
+        27436
+      ],
+      "innerEventsCount": 0,
+      "nameNote": "",
+      "category": {
+        "id": 5,
+        "name": "Koncerty",
+        "enum": "CONCERTS"
+      },
+      "contacts": [],
+      "priority": 3,
+      "recommended": "RECOMMENDED",
+      "tags": [
+        "Alternativa/Indie",
+        "Dream Pop",
+        "Pop"
+      ],
+      "note": "",
+      "innerScheduleIds": []
+    },
+    "1152433": {
+      "id": 1152433,
+      "name": "Stálá expozice: Müllerova vila",
+      "url": "https://goout.net/cs/vystavy/stala-expozice-mullerova-vila/iwsxc/",
+      "state": "APPROVED",
+      "categories": {
+        "7": {
+          "id": 7,
+          "name": "Výstavy",
+          "enum": "EXHIBITIONS"
+        }
+      },
+      "text": "Stálá expozice Müllerovy vily představuje luxusní obydlí připomínající prvorepublikový životní styl rodiny, která právem patřila do pražské vyšší společnosti. Interiéry, které ze značné části navrhl sám Adolf Loos, překvapí svou důmyslností jak v ohledech využití prostoru, tak volbou materiálů a rozmanité barevnosti. Veškeré zařízení vyniká svým kvalitním provedením. Adolf Loos vždy spolupracoval jen s těmi nejlepšími výrobci, na něž kladl vysoké nároky. Spojení přepychu s jednoduchostí a funkčností potvrzuje Müllerovu vilu v roli jedinečného díla moderní architektury a designu.\n\n*Otevírací doba:* Prohlídky probíhají v úterý, čtvrtky, soboty a neděle v 09:00, 11:00, 13:00, 15:00, 17:00. Návštěva je možná pouze po předchozí rezervaci.",
+      "images": [
+        {
+          "id": 559782,
+          "src": "https://goout.net/i/055/559782-%%%.jpg"
+        },
+        {
+          "id": 573733,
+          "src": "https://goout.net/i/057/573733-%%%.jpg"
+        },
+        {
+          "id": 573734,
+          "src": "https://goout.net/i/057/573734-%%%.jpg"
+        },
+        {
+          "id": 573735,
+          "src": "https://goout.net/i/057/573735-%%%.jpg"
+        },
+        {
+          "id": 573736,
+          "src": "https://goout.net/i/057/573736-%%%.jpg"
+        },
+        {
+          "id": 559781,
+          "src": "https://goout.net/i/055/559781-%%%.jpg"
+        }
+      ],
+      "videos": [],
+      "mainImage": {
+        "id": 559782,
+        "src": "https://goout.net/i/055/559782-%%%.jpg"
+      },
+      "keywords": "stala expozice mullerova vila",
+      "score": 1000,
+      "performerIds": [],
+      "innerEventsCount": 0,
+      "nameNote": "",
+      "category": {
+        "id": 7,
+        "name": "Výstavy",
+        "enum": "EXHIBITIONS"
+      },
+      "contacts": [],
+      "priority": 0,
+      "recommended": "RECOMMENDED_IN_CATEGORY",
+      "tags": [
+        "Architektura",
+        "Stálá"
+      ],
+      "note": "",
+      "innerScheduleIds": []
+    }
+  },
+  "limit": 100
+}

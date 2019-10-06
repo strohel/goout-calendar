@@ -1,6 +1,8 @@
 use crate::calendar::{CalendarRequest, HandlerResult};
 use chrono::Duration;
 use icalendar::{Component, Event as IcalEvent};
+#[cfg(test)]
+use mockito;
 use reqwest::Client;
 use serde::Deserialize;
 use serde_json::Value;
@@ -11,7 +13,7 @@ use std::{
 
 type DateTime = chrono::DateTime<chrono::FixedOffset>;
 
-const ENDPOINT_URL: &str = "https://goout.net/services/feeder/v1/events.json";
+const ENDPOINT_PATH: &str = "/services/feeder/v1/events.json";
 
 #[derive(Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
@@ -99,6 +101,12 @@ pub(in crate) fn fetch_page(
     cal_req: &CalendarRequest,
     page: u8,
 ) -> HandlerResult<EventsResponse> {
+    #[cfg(not(test))]
+    let host = "https://goout.net";
+    #[cfg(test)]
+    let host = &mockito::server_url();
+    let endpoint_url = &format!("{}{}", host, ENDPOINT_PATH);
+
     let (user_str, page_str) = (&cal_req.id.to_string(), &page.to_string());
     let mut params = vec![
         ("tag", "liked"),
@@ -111,12 +119,14 @@ pub(in crate) fn fetch_page(
         params.push(("after", after));
     }
 
-    let mut raw_response = client.get(ENDPOINT_URL).query(&params).send()?;
+    let mut raw_response = client.get(endpoint_url).query(&params).send()?;
+    if let Err(e) = raw_response.error_for_status_ref() {
+        let body = raw_response.text().unwrap_or_default();
+        return Err(format!("Error retrieving {}: {}", e, body).into());
+    }
     eprintln!("Retrieved {}.", raw_response.url());
     let response: EventsResponse = raw_response.json()?;
     response.error_for_status()?;
-    // we call this on raw_response later, because that way we get better error message
-    raw_response.error_for_status()?;
     Ok(response)
 }
 

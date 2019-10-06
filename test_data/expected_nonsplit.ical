@@ -1,0 +1,44 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:ICALENDAR-RS
+CALSCALE:GREGORIAN
+BEGIN:VEVENT
+DTSTAMP:20191007T003056
+DESCRIPTION:Lana Del Rey (Alternativa/Indie, Dream Pop, Pop)\nEUR 69.65\nht
+ tps://goout.net/cs/koncerty/lana-del-rey/sxape/+egben/
+DTEND:20200303T000000
+DTSTART:20200302T200000
+GEO:52.5063;13.4436
+LOCATION:Mercedes-Benz Arena, Mercedes Platz 1, Berlin, Německo
+STATUS:CONFIRMED
+SUMMARY:Lana Del Rey (Koncerty)
+URL:https://goout.net/cs/koncerty/lana-del-rey/sxape/+egben/
+UID:4e400599-6ffb-4b3d-9606-2422d9b161e7
+END:VEVENT
+BEGIN:VEVENT
+DTSTAMP:20191007T003056
+DESCRIPTION:CZK 130–300\n\nStálá expozice Müllerovy vily představuje 
+ luxusní obydlí připomínající prvorepublikový životní styl rodiny, 
+ která právem patřila do pražské vyšší společnosti. Interiéry, kte
+ ré ze značné části navrhl sám Adolf Loos, překvapí svou důmyslnost
+ í jak v ohledech využití prostoru, tak volbou materiálů a rozmanité b
+ arevnosti. Veškeré zařízení vyniká svým kvalitním provedením. Adol
+ f Loos vždy spolupracoval jen s těmi nejlepšími výrobci, na něž klad
+ l vysoké nároky. Spojení přepychu s jednoduchostí a funkčností potvr
+ zuje Müllerovu vilu v roli jedinečného díla moderní architektury a des
+ ignu.\n\n*Otevírací doba:* Prohlídky probíhají v úterý, čtvrtky, so
+ boty a neděle v 09:00, 11:00, 13:00, 15:00, 17:00. Návštěva je možná 
+ pouze po předchozí rezervaci.\n\nhttps://goout.net/cs/vystavy/stala-expoz
+ ice-mullerova-vila/iwsxc/+viibj/
+DTEND:20280714T000000
+DTSTART:20160101T120000
+GEO:50.0924;14.3785
+LOCATION:Müllerova vila, Nad Hradním vodojemem 14/642, Praha 6 – Stře
+ šovice, Česko
+STATUS:CONFIRMED
+SUMMARY:Stálá expozice: Müllerova vila (Výstavy)
+URL:https://goout.net/cs/vystavy/stala-expozice-mullerova-vila/iwsxc/+viibj
+ /
+UID:4a0b29b5-8595-410b-8c1e-1be4df216e19
+END:VEVENT
+END:VCALENDAR

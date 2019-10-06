@@ -38,3 +38,56 @@ pub(in crate) fn serve(cal_req: Form<CalendarRequest>) -> HandlerResult<Content<
 
     Ok(Content(ContentType::Calendar, calendar.to_string()))
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::rocket;
+    use mockito::mock;
+    use pretty_assertions::assert_eq;
+    use rocket::{http::Status, local::Client};
+    use std::fs;
+
+    #[test]
+    fn test_serve_nonsplit_implicit() {
+        invoke_serve(
+            "/services/feeder/usercalendar.ics?id=43224&language=en",
+            "test_data/expected_nonsplit.ical",
+        );
+    }
+
+    #[test]
+    fn test_serve_nonsplit_explicit() {
+        invoke_serve(
+            "/services/feeder/usercalendar.ics?id=43224&language=en&split=false",
+            "test_data/expected_nonsplit.ical",
+        );
+    }
+
+    #[test]
+    fn test_serve_split() {
+        invoke_serve(
+            "/services/feeder/usercalendar.ics?id=43224&language=en&split=true",
+            "test_data/expected_split.ical",
+        );
+    }
+
+    fn invoke_serve(path: &str, expected_ical_file: &str) {
+        let client = Client::new(rocket()).unwrap();
+
+        let goout_api_path = "/services/feeder/v1/events.json?tag=liked&user=43224&page=1&language=en&source=goout.strohel.eu";
+        let goout_api_mock = mock("GET", goout_api_path)
+            .with_body_from_file("test_data/events.json")
+            .create();
+
+        let mut response = client.get(path).dispatch();
+        assert_eq!(response.status(), Status::Ok);
+        assert_eq!(response.content_type(), Some(ContentType::Calendar));
+
+        let body = response.body_string().unwrap();
+        let expected_body = fs::read_to_string(expected_ical_file).unwrap();
+        assert_eq!(body, expected_body);
+
+        goout_api_mock.assert();
+    }
+}
