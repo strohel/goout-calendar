@@ -3,20 +3,19 @@ VERSION:2.0
 PRODID:ICALENDAR-RS
 CALSCALE:GREGORIAN
 BEGIN:VEVENT
-DTSTAMP:20191007T003056
 DESCRIPTION:Lana Del Rey (Alternativa/Indie, Dream Pop, Pop)\nEUR 69.65\nht
  tps://goout.net/cs/koncerty/lana-del-rey/sxape/+egben/
 DTEND:20200303T000000
+DTSTAMP:20191006T023433
 DTSTART:20200302T200000
 GEO:52.5063;13.4436
 LOCATION:Mercedes-Benz Arena, Mercedes Platz 1, Berlin, Německo
 STATUS:CONFIRMED
 SUMMARY:Lana Del Rey (Koncerty)
+UID:Schedule#5141404@goout.net
 URL:https://goout.net/cs/koncerty/lana-del-rey/sxape/+egben/
-UID:4e400599-6ffb-4b3d-9606-2422d9b161e7
 END:VEVENT
 BEGIN:VEVENT
-DTSTAMP:20191007T003056
 DESCRIPTION:CZK 130–300\n\nStálá expozice Müllerovy vily představuje 
  luxusní obydlí připomínající prvorepublikový životní styl rodiny, 
  která právem patřila do pražské vyšší společnosti. Interiéry, kte
@@ -31,14 +30,15 @@ DESCRIPTION:CZK 130–300\n\nStálá expozice Müllerovy vily představuje
  pouze po předchozí rezervaci.\n\nhttps://goout.net/cs/vystavy/stala-expoz
  ice-mullerova-vila/iwsxc/+viibj/
 DTEND:20280714T000000
+DTSTAMP:20191006T020235
 DTSTART:20160101T120000
 GEO:50.0924;14.3785
 LOCATION:Müllerova vila, Nad Hradním vodojemem 14/642, Praha 6 – Stře
  šovice, Česko
 STATUS:CONFIRMED
 SUMMARY:Stálá expozice: Müllerova vila (Výstavy)
+UID:Schedule#3536471@goout.net
 URL:https://goout.net/cs/vystavy/stala-expozice-mullerova-vila/iwsxc/+viibj
  /
-UID:4a0b29b5-8595-410b-8c1e-1be4df216e19
 END:VEVENT
 END:VCALENDAR

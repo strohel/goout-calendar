@@ -3,20 +3,19 @@ VERSION:2.0
 PRODID:ICALENDAR-RS
 CALSCALE:GREGORIAN
 BEGIN:VEVENT
-DTSTAMP:20191007T230731
 DESCRIPTION:Lana Del Rey (Alternativa/Indie, Dream Pop, Pop)\nEUR 69.65\nht
  tps://goout.net/cs/koncerty/lana-del-rey/sxape/+egben/
 DTEND:20200303T000000
+DTSTAMP:20191006T023433
 DTSTART:20200302T200000
 GEO:52.5063;13.4436
 LOCATION:Mercedes-Benz Arena, Mercedes Platz 1, Berlin, Německo
 STATUS:CONFIRMED
 SUMMARY:Lana Del Rey (Koncerty)
+UID:Schedule#5141404@goout.net
 URL:https://goout.net/cs/koncerty/lana-del-rey/sxape/+egben/
-UID:024bfa29-aaf5-4c6a-b85e-1a4205436a56
 END:VEVENT
 BEGIN:VEVENT
-DTSTAMP:20191007T230731
 DESCRIPTION:CZK 130–300\n\nStálá expozice Müllerovy vily představuje 
  luxusní obydlí připomínající prvorepublikový životní styl rodiny, 
  která právem patřila do pražské vyšší společnosti. Interiéry, kte
@@ -31,18 +30,18 @@ DESCRIPTION:CZK 130–300\n\nStálá expozice Müllerovy vily představuje
  pouze po předchozí rezervaci.\n\nhttps://goout.net/cs/vystavy/stala-expoz
  ice-mullerova-vila/iwsxc/+viibj/
 DTEND:20160102T000000
+DTSTAMP:20191006T020235
 DTSTART:20160101T120000
 GEO:50.0924;14.3785
 LOCATION:Müllerova vila, Nad Hradním vodojemem 14/642, Praha 6 – Stře
  šovice, Česko
 STATUS:CONFIRMED
 SUMMARY:Begin: Stálá expozice: Müllerova vila (Výstavy)
+UID:Begin: Schedule#3536471@goout.net
 URL:https://goout.net/cs/vystavy/stala-expozice-mullerova-vila/iwsxc/+viibj
  /
-UID:783e726f-c4b7-4109-804e-c5ea8ca2993c
 END:VEVENT
 BEGIN:VEVENT
-DTSTAMP:20191007T230731
 DESCRIPTION:CZK 130–300\n\nStálá expozice Müllerovy vily představuje 
  luxusní obydlí připomínající prvorepublikový životní styl rodiny, 
  která právem patřila do pražské vyšší společnosti. Interiéry, kte
@@ -57,14 +56,15 @@ DESCRIPTION:CZK 130–300\n\nStálá expozice Müllerovy vily představuje
  pouze po předchozí rezervaci.\n\nhttps://goout.net/cs/vystavy/stala-expoz
  ice-mullerova-vila/iwsxc/+viibj/
 DTEND:20280714T000000
+DTSTAMP:20191006T020235
 DTSTART:20280713T000000
 GEO:50.0924;14.3785
 LOCATION:Müllerova vila, Nad Hradním vodojemem 14/642, Praha 6 – Stře
  šovice, Česko
 STATUS:CONFIRMED
 SUMMARY:End: Stálá expozice: Müllerova vila (Výstavy)
+UID:End: Schedule#3536471@goout.net
 URL:https://goout.net/cs/vystavy/stala-expozice-mullerova-vila/iwsxc/+viibj
  /
-UID:8922ef14-d23d-49e0-9736-fda68dd40b48
 END:VEVENT
 END:VCALENDAR

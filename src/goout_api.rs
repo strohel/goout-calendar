@@ -18,6 +18,7 @@ const ENDPOINT_PATH: &str = "/services/feeder/v1/events.json";
 #[derive(Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
 struct Schedule {
+    id: u64,
     event_id: u64,
     url: String,
     cancelled: bool,
@@ -25,6 +26,8 @@ struct Schedule {
     start: DateTime,
     #[serde(rename = "endISO8601")]
     end: DateTime,
+    #[serde(rename = "uploadedOnISO8601")]
+    uploaded_on: DateTime,
     hour_ignored: bool,
     is_long_term: bool, // TODO: use
     pricing: String,
@@ -184,6 +187,11 @@ fn create_ical_event(
     response: &EventsResponse,
 ) -> HandlerResult<IcalEvent> {
     let mut ical_event = IcalEvent::new();
+
+    ical_event.uid(&format!("{}Schedule#{}@goout.net", info.summary_prefix, schedule.id));
+    let uploaded_on_str = &schedule.uploaded_on.format("%Y%m%dT%H%M%S").to_string();
+    ical_event.add_property("DTSTAMP", uploaded_on_str);
+
     set_start_end(&mut ical_event, schedule.hour_ignored, info.start, info.end);
     ical_event.add_property("URL", &schedule.url);
     set_cancelled(&mut ical_event, schedule.cancelled);
