@@ -5,6 +5,7 @@ authors = ["Matěj Laitl <matej@laitl.cz>"]
 edition = "2018"
 
 [dependencies]
+anyhow = "1.0"
 chrono = { version = "0.4", features = ["serde"] }
 icalendar = "0.6"
 reqwest = "0.9"

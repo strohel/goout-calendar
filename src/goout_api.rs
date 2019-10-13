@@ -1,4 +1,5 @@
 use crate::calendar::{CalendarRequest, HandlerResult};
+use anyhow::{anyhow, Context};
 use chrono::Duration;
 use icalendar::{Component, Event as IcalEvent};
 #[cfg(test)]
@@ -90,10 +91,10 @@ pub(in crate) struct EventsResponse {
 impl EventsResponse {
     fn error_for_status(self: &Self) -> HandlerResult<()> {
         if self.message != "OK" {
-            return Err(format!("Expected message OK, got {}.", self.message).into());
+            return Err(anyhow!("Expected message OK, got {}.", self.message));
         }
         if self.status != 200 {
-            return Err(format!("Expected status 200, got {}.", self.status).into());
+            return Err(anyhow!("Expected status 200, got {}.", self.status));
         }
         Ok(())
     }
@@ -124,8 +125,7 @@ pub(in crate) fn fetch_page(
 
     let mut raw_response = client.get(endpoint_url).query(&params).send()?;
     if let Err(e) = raw_response.error_for_status_ref() {
-        let body = raw_response.text().unwrap_or_default();
-        return Err(format!("Error retrieving {}: {}", e, body).into());
+        return Err(e).context(raw_response.text().unwrap_or_default());
     }
     eprintln!("Retrieved {}.", raw_response.url());
     let response: EventsResponse = raw_response.json()?;
@@ -196,14 +196,20 @@ fn create_ical_event(
     ical_event.add_property("URL", &schedule.url);
     set_cancelled(&mut ical_event, schedule.cancelled);
 
-    let venue = response.venues.get(&schedule.venue_id).ok_or("No venue")?;
+    let venue = response
+        .venues
+        .get(&schedule.venue_id)
+        .context("No venue")?;
     ical_event.location(&format!(
         "{}, {}, {}, {}",
         venue.name, venue.address, venue.city, venue.locality.country.name
     ));
     ical_event.add_property("GEO", &format!("{};{}", venue.latitude, venue.longitude));
 
-    let event = response.events.get(&schedule.event_id).ok_or("No event")?;
+    let event = response
+        .events
+        .get(&schedule.event_id)
+        .context("No event")?;
     set_summary(
         &mut ical_event,
         event,
@@ -279,7 +285,7 @@ fn set_description(
 
     let mut performer_names = Vec::new();
     for performer_id in schedule.performer_ids.iter() {
-        let performer = performers.get(&performer_id).ok_or("No performer")?;
+        let performer = performers.get(&performer_id).context("No performer")?;
         let mut performer_str = performer.name.to_string();
         if !performer.tags.is_empty() {
             write!(performer_str, " ({})", performer.tags.join(", "))?;

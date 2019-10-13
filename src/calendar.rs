@@ -1,10 +1,10 @@
 use crate::goout_api;
+use anyhow;
 use icalendar::Calendar;
 use reqwest::Client;
 use rocket::{get, http::ContentType, request::Form, response::Content, FromForm};
-use std::error::Error;
 
-pub(in crate) type HandlerResult<T> = Result<T, Box<dyn Error>>;
+pub(in crate) type HandlerResult<T> = anyhow::Result<T>;
 
 #[derive(FromForm)]
 pub(in crate) struct CalendarRequest {
