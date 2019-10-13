@@ -188,7 +188,10 @@ fn create_ical_event(
 ) -> HandlerResult<IcalEvent> {
     let mut ical_event = IcalEvent::new();
 
-    ical_event.uid(&format!("{}Schedule#{}@goout.net", info.summary_prefix, schedule.id));
+    ical_event.uid(&format!(
+        "{}Schedule#{}@goout.net",
+        info.summary_prefix, schedule.id
+    ));
     let uploaded_on_str = &schedule.uploaded_on.format("%Y%m%dT%H%M%S").to_string();
     ical_event.add_property("DTSTAMP", uploaded_on_str);
 
