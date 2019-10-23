@@ -66,7 +66,7 @@ mod tests {
     }
 
     #[test]
-    fn test_serve_nonsplit_implicit() {
+    fn test_serve() {
         invoke_serve(
             "/services/feeder/usercalendar.ics?id=43224&language=en",
             "test_data/expected_nonsplit.ical",
@@ -74,7 +74,7 @@ mod tests {
     }
 
     #[test]
-    fn test_serve_nonsplit_explicit() {
+    fn test_serve_nonsplit() {
         invoke_serve(
             "/services/feeder/usercalendar.ics?id=43224&language=en&split=false",
             "test_data/expected_nonsplit.ical",
