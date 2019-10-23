@@ -1,7 +1,7 @@
 steps:
 - name: 'gcr.io/cloud-builders/docker'
   args: ['build', '-t', 'gcr.io/$PROJECT_ID/goout-calendar:$SHORT_SHA', '.']
-  timeout: 900s
+  timeout: 1800s
 - name: 'gcr.io/cloud-builders/docker'
   args: ['push', 'gcr.io/$PROJECT_ID/goout-calendar:$SHORT_SHA']
 # Generate kubernetes.yaml with variables filled-in. nginx is an arbitrary
@@ -16,4 +16,4 @@ steps:
   - 'CLOUDSDK_COMPUTE_ZONE=us-east1-b'
   - 'CLOUDSDK_CONTAINER_CLUSTER=goout-calendar'
 images: ['gcr.io/$PROJECT_ID/goout-calendar:$SHORT_SHA']
-timeout: 1000s
+timeout: 1920s
