@@ -1,5 +1,7 @@
 FROM rustlang/rust:nightly as build
 
+RUN rustc --version
+
 RUN apt-get update && \
     apt-get install -y --no-install-recommends dumb-init &&  \
     rm -rf /var/lib/apt/lists/*
@@ -9,10 +11,14 @@ RUN cargo install cargo-build-deps
 WORKDIR /buildenv
 RUN USER=root cargo init
 COPY Cargo.toml ./
+RUN cargo build-deps
 RUN cargo build-deps --release
 
 # Build our actual Rust app
+COPY resources resources
 COPY src src
+COPY test_data test_data
+RUN cargo test
 RUN cargo install --path . --root /install
 
 # Production (release) image
