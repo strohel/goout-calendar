@@ -4,7 +4,7 @@ use reqwest::Client;
 use rocket::{
     get,
     http::ContentType,
-    request::{Form, FormParseError},
+    request::{FormParseError, LenientForm},
     response::Content,
     FromForm,
 };
@@ -19,7 +19,7 @@ pub(in crate) struct CalendarRequest {
 
 #[get("/services/feeder/usercalendar.ics?<cal_req..>")]
 pub(in crate) fn serve(
-    cal_req: Result<Form<CalendarRequest>, FormParseError>,
+    cal_req: Result<LenientForm<CalendarRequest>, FormParseError>,
 ) -> Result<Content<String>, HandlerError> {
     let cal_req = cal_req?;
     let client = Client::new();
@@ -85,6 +85,22 @@ mod tests {
     fn test_serve_split() {
         invoke_serve(
             "/services/feeder/usercalendar.ics?id=43224&language=en&split=true",
+            "test_data/expected_split.ical",
+        );
+    }
+
+    #[test]
+    fn test_serve_extra_params() {
+        invoke_serve(
+            "/services/feeder/usercalendar.ics?id=43224&language=en&extraparam=value",
+            "test_data/expected_nonsplit.ical",
+        );
+    }
+
+    #[test]
+    fn test_serve_split_extra_params() {
+        invoke_serve(
+            "/services/feeder/usercalendar.ics?id=43224&language=en&extraparam=value&split=true",
             "test_data/expected_split.ical",
         );
     }
