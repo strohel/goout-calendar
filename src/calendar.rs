@@ -1,10 +1,13 @@
-use crate::goout_api;
-use anyhow;
+use crate::{error::HandlerError, goout_api};
 use icalendar::Calendar;
 use reqwest::Client;
-use rocket::{get, http::ContentType, request::Form, response::Content, FromForm};
-
-pub(in crate) type HandlerResult<T> = anyhow::Result<T>;
+use rocket::{
+    get,
+    http::ContentType,
+    request::{Form, FormParseError},
+    response::Content,
+    FromForm,
+};
 
 #[derive(FromForm)]
 pub(in crate) struct CalendarRequest {
@@ -15,7 +18,10 @@ pub(in crate) struct CalendarRequest {
 }
 
 #[get("/services/feeder/usercalendar.ics?<cal_req..>")]
-pub(in crate) fn serve(cal_req: Form<CalendarRequest>) -> HandlerResult<Content<String>> {
+pub(in crate) fn serve(
+    cal_req: Result<Form<CalendarRequest>, FormParseError>,
+) -> Result<Content<String>, HandlerError> {
+    let cal_req = cal_req?;
     let client = Client::new();
 
     // Normally, we would stream to output as soon as we get first page, but
@@ -47,6 +53,17 @@ mod tests {
     use pretty_assertions::assert_eq;
     use rocket::{http::Status, local::Client};
     use std::fs;
+
+    #[test]
+    fn test_serve_bad_request() {
+        let client = Client::new(rocket()).unwrap();
+        let mut response = client.get("/services/feeder/usercalendar.ics").dispatch();
+        assert_eq!(response.status(), Status::BadRequest);
+
+        let body = response.body_string().unwrap();
+        let expected_start = "Bad request: Missing(RawStr(\"id\"))";
+        assert_eq!(&body[..expected_start.len()], expected_start);
+    }
 
     #[test]
     fn test_serve_nonsplit_implicit() {

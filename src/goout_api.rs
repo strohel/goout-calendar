@@ -1,4 +1,4 @@
-use crate::calendar::{CalendarRequest, HandlerResult};
+use crate::{calendar::CalendarRequest, error::HandlerResult};
 use anyhow::{anyhow, Context};
 use chrono::Duration;
 use icalendar::{Component, Event as IcalEvent};
