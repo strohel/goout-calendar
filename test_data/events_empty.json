@@ -1,0 +1,11 @@
+{
+  "status": 200,
+  "message": "OK",
+  "hasNext": false,
+  "page": 1,
+  "schedule": [],
+  "venues": {},
+  "performers": {},
+  "events": {},
+  "limit": 100
+}

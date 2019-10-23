@@ -90,6 +90,26 @@ mod tests {
     }
 
     #[test]
+    fn test_serve_after() {
+        invoke_serve_ex(
+            "/services/feeder/usercalendar.ics?id=43224&language=en&after=2020-04-01",
+            "tag=liked&user=43224&page=1&language=en&source=goout.strohel.eu&after=2020-04-01",
+            "events_empty.json",
+            "test_data/expected_empty.ical",
+        );
+    }
+
+    #[test]
+    fn test_serve_split_after() {
+        invoke_serve_ex(
+            "/services/feeder/usercalendar.ics?id=43224&split=true&language=en&after=2020-04-01",
+            "tag=liked&user=43224&page=1&language=en&source=goout.strohel.eu&after=2020-04-01",
+            "events_empty.json",
+            "test_data/expected_empty.ical",
+        );
+    }
+
+    #[test]
     fn test_serve_extra_params() {
         invoke_serve(
             "/services/feeder/usercalendar.ics?id=43224&language=en&extraparam=value",
@@ -106,21 +126,34 @@ mod tests {
     }
 
     fn invoke_serve(path: &str, expected_ical_file: &str) {
+        invoke_serve_ex(
+            path,
+            "tag=liked&user=43224&page=1&language=en&source=goout.strohel.eu",
+            "events.json",
+            expected_ical_file,
+        )
+    }
+
+    fn invoke_serve_ex(
+        path: &str,
+        goout_api_params: &str,
+        goout_api_resp_file: &str,
+        expected_ical_file: &str,
+    ) {
         let client = Client::new(rocket()).unwrap();
 
-        let goout_api_path = "/services/feeder/v1/events.json?tag=liked&user=43224&page=1&language=en&source=goout.strohel.eu";
-        let goout_api_mock = mock("GET", goout_api_path)
-            .with_body_from_file("test_data/events.json")
+        let goout_api_path = format!("/services/feeder/v1/events.json?{}", goout_api_params);
+        let goout_api_mock = mock("GET", goout_api_path.as_str())
+            .with_body_from_file(format!("test_data/{}", goout_api_resp_file))
             .create();
 
         let mut response = client.get(path).dispatch();
+        goout_api_mock.assert();
         assert_eq!(response.status(), Status::Ok);
         assert_eq!(response.content_type(), Some(ContentType::Calendar));
 
         let body = response.body_string().unwrap();
         let expected_body = fs::read_to_string(expected_ical_file).unwrap();
         assert_eq!(body, expected_body);
-
-        goout_api_mock.assert();
     }
 }
