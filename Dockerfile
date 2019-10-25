@@ -6,19 +6,13 @@ RUN apt-get update && \
     apt-get install -y --no-install-recommends dumb-init &&  \
     rm -rf /var/lib/apt/lists/*
 
-# Build dependencies-only as a separate layer to speed-up repeated builds
-RUN cargo install cargo-build-deps
-WORKDIR /buildenv
-RUN USER=root cargo init
+# Build our Rust app
 COPY Cargo.toml ./
-RUN cargo build-deps
-RUN cargo build-deps --release
-
-# Build our actual Rust app
 COPY resources resources
 COPY src src
 COPY test_data test_data
-RUN cargo test
+# use --release so that compiled dependencies are shared:
+RUN cargo test --release
 RUN cargo install --path . --root /install
 
 # Production (release) image
