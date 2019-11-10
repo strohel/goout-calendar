@@ -16,3 +16,6 @@ serde_json = "1.0"
 [dev-dependencies]
 mockito = "0.21"
 pretty_assertions = "0.6"
+
+[patch.crates-io]
+icalendar = { git = 'https://github.com/strohel/icalendar-rs.git', branch = "timezone" }

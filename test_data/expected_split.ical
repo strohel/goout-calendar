@@ -5,9 +5,9 @@ CALSCALE:GREGORIAN
 BEGIN:VEVENT
 DESCRIPTION:Lana Del Rey (Alternativa/Indie, Dream Pop, Pop)\nEUR 69.65\nht
  tps://goout.net/cs/koncerty/lana-del-rey/sxape/+egben/
-DTEND:20200303T000000
+DTEND:20200302T230000Z
 DTSTAMP:20191006T023433
-DTSTART:20200302T200000
+DTSTART:20200302T190000Z
 GEO:52.5063;13.4436
 LOCATION:Mercedes-Benz Arena, Mercedes Platz 1, Berlin, Německo
 STATUS:CONFIRMED
@@ -29,9 +29,9 @@ DESCRIPTION:CZK 130–300\n\nStálá expozice Müllerovy vily představuje
  boty a neděle v 09:00, 11:00, 13:00, 15:00, 17:00. Návštěva je možná 
  pouze po předchozí rezervaci.\n\nhttps://goout.net/cs/vystavy/stala-expoz
  ice-mullerova-vila/iwsxc/+viibj/
-DTEND:20160102T000000
+DTEND:20160101T230000Z
 DTSTAMP:20191006T020235
-DTSTART:20160101T120000
+DTSTART:20160101T110000Z
 GEO:50.0924;14.3785
 LOCATION:Müllerova vila, Nad Hradním vodojemem 14/642, Praha 6 – Stře
  šovice, Česko
@@ -55,9 +55,9 @@ DESCRIPTION:CZK 130–300\n\nStálá expozice Müllerovy vily představuje
  boty a neděle v 09:00, 11:00, 13:00, 15:00, 17:00. Návštěva je možná 
  pouze po předchozí rezervaci.\n\nhttps://goout.net/cs/vystavy/stala-expoz
  ice-mullerova-vila/iwsxc/+viibj/
-DTEND:20280714T000000
+DTEND:20280713T220000Z
 DTSTAMP:20191006T020235
-DTSTART:20280713T000000
+DTSTART:20280712T220000Z
 GEO:50.0924;14.3785
 LOCATION:Müllerova vila, Nad Hradním vodojemem 14/642, Praha 6 – Stře
  šovice, Česko
