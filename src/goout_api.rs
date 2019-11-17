@@ -1,6 +1,6 @@
 use crate::{calendar::CalendarRequest, error::HandlerResult};
 use anyhow::{anyhow, Context};
-use chrono::Duration;
+use chrono::{Duration, Utc};
 use icalendar::{Component, Event as IcalEvent};
 #[cfg(test)]
 use mockito;
@@ -238,8 +238,8 @@ fn set_start_end(ical_event: &mut IcalEvent, hour_ignored: bool, start: DateTime
         ical_event.start_date(start.date());
         ical_event.end_date(ical_end.date());
     } else {
-        ical_event.starts(start);
-        ical_event.ends(ical_end);
+        ical_event.starts(start.with_timezone(&Utc));
+        ical_event.ends(ical_end.with_timezone(&Utc));
     }
 }
 

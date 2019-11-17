@@ -7,7 +7,7 @@ edition = "2018"
 [dependencies]
 anyhow = "1.0"
 chrono = { version = "0.4", features = ["serde"] }
-icalendar = "0.6"
+icalendar = "0.7"
 reqwest = "0.9"
 rocket = "0.4"
 serde = { version = "1.0", features = ["derive"] }
@@ -16,6 +16,3 @@ serde_json = "1.0"
 [dev-dependencies]
 mockito = "0.21"
 pretty_assertions = "0.6"
-
-[patch.crates-io]
-icalendar = { git = 'https://github.com/strohel/icalendar-rs.git', branch = "timezone" }
