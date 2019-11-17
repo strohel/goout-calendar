@@ -30,12 +30,11 @@ struct Schedule {
     #[serde(rename = "uploadedOnISO8601")]
     uploaded_on: DateTime,
     hour_ignored: bool,
-    is_long_term: bool, // TODO: use
+    is_long_term: bool,
     pricing: String,
     // rarely, some schedules don't contain currency key, e.g. qhstd
     #[serde(default)]
     currency: String,
-    timezone: String, // TODO: use
     venue_id: u64,
     performer_ids: Vec<u64>,
 }
