@@ -33,7 +33,7 @@ pub(in crate) fn serve(
     let mut calendar = Calendar::new();
     for page in 1.. {
         let events_response = generation::fetch_page(&client, &cal_req, page)?;
-        for event in generation::generate_events(&events_response, &cal_req)? {
+        for event in generation::ical::generate_events(&events_response, &cal_req)? {
             calendar.push(event);
         }
 
