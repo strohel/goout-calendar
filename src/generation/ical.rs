@@ -27,26 +27,24 @@ pub(in crate) fn generate_events(
 ) -> HandlerResult<Vec<IcalEvent>> {
     let mut events: Vec<IcalEvent> = Vec::new();
     for schedule in response.schedule.iter() {
-        let mut schedule_infos = Vec::with_capacity(2);
         if schedule.is_long_term && cal_req.split {
             let first_day_end = schedule.start.date().and_hms(23, 59, 59);
-            let last_day_start = schedule.end.date().and_hms(0, 0, 0);
-            let begin_prefix = match &cal_req.language[..] {
+            let prefix = match &cal_req.language[..] {
                 "cs" => "Začátek: ",
                 _ => "Begin: ",
             };
-            let end_prefix = match &cal_req.language[..] {
+            let info = schedule_info(schedule.start, first_day_end, prefix);
+            events.push(create_ical_event(schedule, &info, cal_req, response)?);
+
+            let last_day_start = schedule.end.date().and_hms(0, 0, 0);
+            let prefix = match &cal_req.language[..] {
                 "cs" => "Konec: ",
                 _ => "End: ",
             };
-
-            schedule_infos.push(schedule_info(schedule.start, first_day_end, begin_prefix));
-            schedule_infos.push(schedule_info(last_day_start, schedule.end, end_prefix));
+            let info = schedule_info(last_day_start, schedule.end, prefix);
+            events.push(create_ical_event(schedule, &info, cal_req, response)?);
         } else {
-            schedule_infos.push(schedule_info(schedule.start, schedule.end, ""));
-        }
-
-        for info in schedule_infos {
+            let info = schedule_info(schedule.start, schedule.end, "");
             events.push(create_ical_event(schedule, &info, cal_req, response)?);
         }
     }
