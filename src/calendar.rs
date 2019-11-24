@@ -1,4 +1,4 @@
-use crate::{error::HandlerError, goout_api};
+use crate::{error::HandlerError, generation};
 use icalendar::Calendar;
 use reqwest::Client;
 use rocket::{
@@ -32,8 +32,8 @@ pub(in crate) fn serve(
     // high latency of first byte served.
     let mut calendar = Calendar::new();
     for page in 1.. {
-        let events_response = goout_api::fetch_page(&client, &cal_req, page)?;
-        for event in goout_api::generate_events(&events_response, &cal_req)? {
+        let events_response = generation::fetch_page(&client, &cal_req, page)?;
+        for event in generation::generate_events(&events_response, &cal_req)? {
             calendar.push(event);
         }
 

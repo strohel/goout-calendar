@@ -4,7 +4,7 @@ use rocket::{routes, Rocket};
 
 mod calendar;
 mod error;
-mod goout_api;
+mod generation;
 mod static_pages;
 
 fn main() {
