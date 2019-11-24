@@ -1,4 +1,4 @@
-use super::{DateTime, Event, EventsResponse, Performer, Schedule};
+use super::{DateTime, Event, EventsResponse, Performer, ScheduleOnWire};
 use crate::{calendar::CalendarRequest, error::HandlerResult};
 use anyhow::Context;
 use chrono::{Duration, Utc};
@@ -52,7 +52,7 @@ pub(in crate) fn generate_events(
 }
 
 fn create_ical_event(
-    schedule: &Schedule,
+    schedule: &ScheduleOnWire,
     info: &ScheduleInfo,
     cal_req: &CalendarRequest,
     response: &EventsResponse,
@@ -151,7 +151,7 @@ fn set_summary(
 
 fn set_description(
     ical_event: &mut IcalEvent,
-    schedule: &Schedule,
+    schedule: &ScheduleOnWire,
     event: &Event,
     performers: &HashMap<u64, Performer>,
 ) -> HandlerResult<()> {

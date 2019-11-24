@@ -15,7 +15,7 @@ const ENDPOINT_PATH: &str = "/services/feeder/v1/events.json";
 
 #[derive(Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
-struct Schedule {
+struct ScheduleOnWire {
     id: u64,
     event_id: u64,
     url: String,
@@ -78,7 +78,7 @@ pub(in crate) struct EventsResponse {
     status: u16,
     message: Value,
     pub has_next: bool,
-    schedule: Vec<Schedule>,
+    schedule: Vec<ScheduleOnWire>,
     venues: HashMap<u64, Venue>,
     performers: HashMap<u64, Performer>,
     events: HashMap<u64, Event>,
