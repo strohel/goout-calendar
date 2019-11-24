@@ -1,5 +1,4 @@
 use crate::{error::HandlerError, generation};
-use icalendar::Calendar;
 use reqwest::Client;
 use rocket::{
     get,
@@ -30,19 +29,8 @@ pub(in crate) fn serve(
     // infrequently and in non-interactive manner. Advantage is that we can
     // properly report errors on HTTP level, and simplicity. Disadvantage is
     // high latency of first byte served.
-    let mut calendar = Calendar::new();
-    for page in 1.. {
-        let events_response = generation::fetch_page(&client, &cal_req, page)?;
-        for event in generation::ical::generate_events(&events_response, &cal_req)? {
-            calendar.push(event);
-        }
-
-        if !events_response.has_next {
-            break;
-        }
-    }
-
-    Ok(Content(ContentType::Calendar, calendar.to_string()))
+    let calendar_string = generation::generate(&client, &cal_req)?;
+    Ok(Content(ContentType::Calendar, calendar_string))
 }
 
 #[cfg(test)]

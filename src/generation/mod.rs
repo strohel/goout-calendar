@@ -1,5 +1,6 @@
 use crate::{calendar::CalendarRequest, error::HandlerResult};
 use anyhow::{anyhow, Context};
+use icalendar::Calendar;
 #[cfg(test)]
 use mockito;
 use reqwest::Client;
@@ -96,7 +97,7 @@ impl EventsResponse {
     }
 }
 
-pub(in crate) fn fetch_page(
+fn fetch_page(
     client: &Client,
     cal_req: &CalendarRequest,
     page: u8,
@@ -127,4 +128,21 @@ pub(in crate) fn fetch_page(
     let response: EventsResponse = raw_response.json()?;
     response.error_for_status()?;
     Ok(response)
+}
+
+pub(in crate) fn generate(client: &Client, cal_req: &CalendarRequest) -> HandlerResult<String> {
+    let mut calendar = Calendar::new();
+
+    for page in 1.. {
+        let events_response = fetch_page(&client, &cal_req, page)?;
+        for event in ical::generate_events(&events_response, &cal_req)? {
+            calendar.push(event);
+        }
+
+        if !events_response.has_next {
+            break;
+        }
+    }
+
+    Ok(calendar.to_string())
 }

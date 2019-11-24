@@ -21,7 +21,7 @@ fn schedule_info(start: DateTime, end: DateTime, summary_prefix: &'static str) -
     }
 }
 
-pub(in crate) fn generate_events(
+pub(super) fn generate_events(
     response: &EventsResponse,
     cal_req: &CalendarRequest,
 ) -> HandlerResult<Vec<IcalEvent>> {
