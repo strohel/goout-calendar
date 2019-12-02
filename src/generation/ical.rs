@@ -1,10 +1,7 @@
-use super::{DateTime, Event, EventsResponse, Performer, ScheduleOnWire};
-use crate::{calendar::CalendarRequest, error::HandlerResult};
-use anyhow::Context;
+use super::{DateTime, Event, Schedule};
+use crate::calendar::CalendarRequest;
 use chrono::{Duration, Utc};
 use icalendar::{Component, Event as IcalEvent};
-use std::collections::HashMap;
-use std::fmt::Write;
 
 #[derive(Debug)]
 struct ScheduleInfo {
@@ -22,11 +19,11 @@ fn schedule_info(start: DateTime, end: DateTime, summary_prefix: &'static str) -
 }
 
 pub(super) fn generate_events(
-    response: &EventsResponse,
+    schedules: Vec<Schedule>,
     cal_req: &CalendarRequest,
-) -> HandlerResult<Vec<IcalEvent>> {
+) -> Vec<IcalEvent> {
     let mut events: Vec<IcalEvent> = Vec::new();
-    for schedule in response.schedule.iter() {
+    for schedule in schedules {
         if schedule.is_long_term && cal_req.split {
             let first_day_end = schedule.start.date().and_hms(23, 59, 59);
             let prefix = match &cal_req.language[..] {
@@ -34,7 +31,7 @@ pub(super) fn generate_events(
                 _ => "Begin: ",
             };
             let info = schedule_info(schedule.start, first_day_end, prefix);
-            events.push(create_ical_event(schedule, &info, cal_req, response)?);
+            events.push(create_ical_event(&schedule, &info, cal_req));
 
             let last_day_start = schedule.end.date().and_hms(0, 0, 0);
             let prefix = match &cal_req.language[..] {
@@ -42,21 +39,20 @@ pub(super) fn generate_events(
                 _ => "End: ",
             };
             let info = schedule_info(last_day_start, schedule.end, prefix);
-            events.push(create_ical_event(schedule, &info, cal_req, response)?);
+            events.push(create_ical_event(&schedule, &info, cal_req));
         } else {
             let info = schedule_info(schedule.start, schedule.end, "");
-            events.push(create_ical_event(schedule, &info, cal_req, response)?);
+            events.push(create_ical_event(&schedule, &info, cal_req));
         }
     }
-    Ok(events)
+    events
 }
 
 fn create_ical_event(
-    schedule: &ScheduleOnWire,
+    schedule: &Schedule,
     info: &ScheduleInfo,
     cal_req: &CalendarRequest,
-    response: &EventsResponse,
-) -> HandlerResult<IcalEvent> {
+) -> IcalEvent {
     let mut ical_event = IcalEvent::new();
 
     ical_event.uid(&format!(
@@ -70,28 +66,21 @@ fn create_ical_event(
     ical_event.add_property("URL", &schedule.url);
     set_cancelled(&mut ical_event, schedule.cancelled);
 
-    let venue = response
-        .venues
-        .get(&schedule.venue_id)
-        .context("No venue")?;
+    let venue = &schedule.venue;
     ical_event.location(&format!(
         "{}, {}, {}, {}",
         venue.name, venue.address, venue.city, venue.locality.country.name
     ));
     ical_event.add_property("GEO", &format!("{};{}", venue.latitude, venue.longitude));
 
-    let event = response
-        .events
-        .get(&schedule.event_id)
-        .context("No event")?;
     set_summary(
         &mut ical_event,
-        event,
+        &schedule.event,
         info.summary_prefix,
         schedule.cancelled,
         cal_req,
     );
-    set_description(&mut ical_event, schedule, event, &response.performers)?;
+    set_description(&mut ical_event, schedule);
 
     #[cfg(debug_assertions)]
     {
@@ -99,7 +88,7 @@ fn create_ical_event(
         eprintln!("{}", ical_event.to_string());
     }
 
-    Ok(ical_event)
+    ical_event
 }
 
 fn set_start_end(ical_event: &mut IcalEvent, hour_ignored: bool, start: DateTime, end: DateTime) {
@@ -149,37 +138,41 @@ fn set_summary(
     ));
 }
 
-fn set_description(
-    ical_event: &mut IcalEvent,
-    schedule: &ScheduleOnWire,
-    event: &Event,
-    performers: &HashMap<u64, Performer>,
-) -> HandlerResult<()> {
-    let mut description = String::new();
+fn set_description(ical_event: &mut IcalEvent, schedule: &Schedule) {
+    let mut description = Vec::<&str>::new();
 
-    let mut performer_names = Vec::new();
-    for performer_id in schedule.performer_ids.iter() {
-        let performer = performers.get(&performer_id).context("No performer")?;
-        let mut performer_str = performer.name.to_string();
-        if !performer.tags.is_empty() {
-            write!(performer_str, " ({})", performer.tags.join(", "))?;
-        }
-        performer_names.push(performer_str);
-    }
-    if !performer_names.is_empty() {
-        writeln!(description, "{}", performer_names.join(", "))?;
-    }
+    let performer_names = schedule
+        .performers
+        .iter()
+        .map(|p| {
+            if p.tags.is_empty() {
+                p.name.clone()
+            } else {
+                format!("{} ({})", p.name, p.tags.join(", "))
+            }
+        })
+        .collect::<Vec<_>>()
+        .join(", ");
+    description.push(&performer_names);
 
-    if !schedule.currency.is_empty() && !schedule.pricing.is_empty() {
-        writeln!(description, "{} {}", schedule.currency, schedule.pricing)?;
-    }
+    let pricing = if !schedule.currency.is_empty() && !schedule.pricing.is_empty() {
+        format!("{} {}", schedule.currency, schedule.pricing)
+    } else {
+        String::from("")
+    };
+    description.push(&pricing);
 
-    let trimmed_text = event.text.trim();
-    if !trimmed_text.is_empty() {
-        writeln!(description, "\n{}\n", trimmed_text)?;
-    }
+    let trimmed_text = format!("\n{}\n", schedule.event.text.trim());
+    description.push(&trimmed_text);
+
     // Google Calendar ignores URL property, add it to text
-    writeln!(description, "{}", schedule.url)?;
-    ical_event.description(description.trim());
-    Ok(())
+    description.push(&schedule.url);
+
+    ical_event.description(
+        &description
+            .into_iter()
+            .filter(|e| !e.trim().is_empty())
+            .collect::<Vec<_>>()
+            .join("\n"),
+    );
 }

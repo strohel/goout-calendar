@@ -7,6 +7,7 @@ use reqwest::Client;
 use serde::Deserialize;
 use serde_json::Value;
 use std::collections::{BTreeMap, HashMap};
+use std::rc::Rc;
 
 pub mod ical;
 
@@ -37,17 +38,34 @@ struct ScheduleOnWire {
     performer_ids: Vec<u64>,
 }
 
-#[derive(Deserialize)]
+#[derive(Debug)]
+struct Schedule {
+    id: u64,
+    event: Rc<Event>,
+    url: String,
+    cancelled: bool,
+    start: DateTime,
+    end: DateTime,
+    uploaded_on: DateTime,
+    hour_ignored: bool,
+    is_long_term: bool,
+    pricing: String,
+    currency: String,
+    venue: Rc<Venue>,
+    performers: Vec<Rc<Performer>>,
+}
+
+#[derive(Deserialize, Debug)]
 struct NamedEntity {
     name: String,
 }
 
-#[derive(Deserialize)]
+#[derive(Deserialize, Debug)]
 struct Locality {
     country: NamedEntity,
 }
 
-#[derive(Deserialize)]
+#[derive(Deserialize, Debug)]
 struct Venue {
     name: String,    // "MeetFactory"
     address: String, // "Ke Sklárně 15"
@@ -57,13 +75,13 @@ struct Venue {
     locality: Locality,
 }
 
-#[derive(Deserialize)]
+#[derive(Deserialize, Debug)]
 struct Performer {
     name: String,
     tags: Vec<String>,
 }
 
-#[derive(Deserialize)]
+#[derive(Deserialize, Debug)]
 struct Event {
     name: String,                           // "Hudební ceny Apollo 2018"
     text: String,                           // "Apollo Czech Music Critics Awards for ..."
@@ -75,7 +93,7 @@ struct Event {
 // "failure to parse all keys in JSON".
 #[derive(Default, Deserialize)]
 #[serde(rename_all = "camelCase", default)]
-pub(in crate) struct EventsResponse {
+struct EventsResponse {
     status: u16,
     message: Value,
     pub has_next: bool,
@@ -130,16 +148,79 @@ fn fetch_page(
     Ok(response)
 }
 
+fn reference_count_map<T>(input: HashMap<u64, T>) -> HashMap<u64, Rc<T>> {
+    input
+        .into_iter()
+        .map(|(id, value)| (id, Rc::new(value)))
+        .collect()
+}
+
+fn response_to_schedules(response: EventsResponse) -> HandlerResult<Vec<Schedule>> {
+    let venue_map = reference_count_map(response.venues);
+    let performer_map = reference_count_map(response.performers);
+    let event_map = reference_count_map(response.events);
+
+    let mut result = Vec::new();
+    for on_wire in response.schedule.into_iter() {
+        let venue = Rc::clone(venue_map.get(&on_wire.venue_id).with_context(|| {
+            format!(
+                "Venue#{} referenced by Schedule#{} not in API response.",
+                on_wire.venue_id, on_wire.id
+            )
+        })?);
+        let performers = on_wire
+            .performer_ids
+            .iter()
+            .map(|performer_id| {
+                performer_map
+                    .get(performer_id)
+                    .with_context(|| {
+                        format!(
+                            "Performer#{} referenced by Schedule#{} not in API response.",
+                            performer_id, on_wire.id
+                        )
+                    })
+                    .map(|performer_ref| Rc::clone(performer_ref))
+            })
+            .collect::<HandlerResult<Vec<_>>>()?;
+        let event = Rc::clone(event_map.get(&on_wire.event_id).with_context(|| {
+            format!(
+                "Event#{} referenced by Schedule#{} not in API response.",
+                on_wire.event_id, on_wire.id
+            )
+        })?);
+        let schedule = Schedule {
+            id: on_wire.id,
+            event,
+            url: on_wire.url,
+            cancelled: on_wire.cancelled,
+            start: on_wire.start,
+            end: on_wire.end,
+            uploaded_on: on_wire.uploaded_on,
+            hour_ignored: on_wire.hour_ignored,
+            is_long_term: on_wire.is_long_term,
+            pricing: on_wire.pricing,
+            currency: on_wire.currency,
+            venue,
+            performers,
+        };
+        result.push(schedule)
+    }
+    Ok(result)
+}
+
 pub(in crate) fn generate(client: &Client, cal_req: &CalendarRequest) -> HandlerResult<String> {
     let mut calendar = Calendar::new();
 
     for page in 1.. {
         let events_response = fetch_page(&client, &cal_req, page)?;
-        for event in ical::generate_events(&events_response, &cal_req)? {
+        let has_next = events_response.has_next;
+        let schedules = response_to_schedules(events_response)?;
+        for event in ical::generate_events(schedules, &cal_req) {
             calendar.push(event);
         }
 
-        if !events_response.has_next {
+        if !has_next {
             break;
         }
     }
