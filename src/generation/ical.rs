@@ -2,67 +2,57 @@ use super::{DateTime, Event, Schedule};
 use crate::calendar::CalendarRequest;
 use chrono::{Duration, Utc};
 use icalendar::{Component, Event as IcalEvent};
-
-#[derive(Debug)]
-struct ScheduleInfo {
-    start: DateTime,
-    end: DateTime,
-    summary_prefix: &'static str,
-}
-
-fn schedule_info(start: DateTime, end: DateTime, summary_prefix: &'static str) -> ScheduleInfo {
-    ScheduleInfo {
-        start,
-        end,
-        summary_prefix,
-    }
-}
+use std::rc::Rc;
 
 pub(super) fn generate_events(
     schedules: Vec<Schedule>,
     cal_req: &CalendarRequest,
 ) -> Vec<IcalEvent> {
+    let begin_prefix = match &cal_req.language[..] {
+        "cs" => "Začátek: ",
+        _ => "Begin: ",
+    };
+    let end_prefix = match &cal_req.language[..] {
+        "cs" => "Konec: ",
+        _ => "End: ",
+    };
+
     let mut events: Vec<IcalEvent> = Vec::new();
     for schedule in schedules {
         if schedule.is_long_term && cal_req.split {
-            let first_day_end = schedule.start.date().and_hms(23, 59, 59);
-            let prefix = match &cal_req.language[..] {
-                "cs" => "Začátek: ",
-                _ => "Begin: ",
-            };
-            let info = schedule_info(schedule.start, first_day_end, prefix);
-            events.push(create_ical_event(&schedule, &info, cal_req));
+            let mut first_day_schedule = schedule.clone();
+            first_day_schedule.id = 1_000_000_000_000 + schedule.id;
+            Rc::make_mut(&mut first_day_schedule.event).name =
+                format!("{}{}", begin_prefix, schedule.event.name);
+            first_day_schedule.end = schedule.start.date().and_hms(23, 59, 59);
+            events.push(create_ical_event(&first_day_schedule, cal_req));
 
-            let last_day_start = schedule.end.date().and_hms(0, 0, 0);
-            let prefix = match &cal_req.language[..] {
-                "cs" => "Konec: ",
-                _ => "End: ",
-            };
-            let info = schedule_info(last_day_start, schedule.end, prefix);
-            events.push(create_ical_event(&schedule, &info, cal_req));
+            let mut last_day_schedule = schedule.clone();
+            last_day_schedule.id = 2_000_000_000_000 + schedule.id;
+            Rc::make_mut(&mut last_day_schedule.event).name =
+                format!("{}{}", end_prefix, schedule.event.name);
+            last_day_schedule.start = schedule.end.date().and_hms(0, 0, 0);
+            events.push(create_ical_event(&last_day_schedule, cal_req));
         } else {
-            let info = schedule_info(schedule.start, schedule.end, "");
-            events.push(create_ical_event(&schedule, &info, cal_req));
+            events.push(create_ical_event(&schedule, cal_req));
         }
     }
     events
 }
 
-fn create_ical_event(
-    schedule: &Schedule,
-    info: &ScheduleInfo,
-    cal_req: &CalendarRequest,
-) -> IcalEvent {
+fn create_ical_event(schedule: &Schedule, cal_req: &CalendarRequest) -> IcalEvent {
     let mut ical_event = IcalEvent::new();
 
-    ical_event.uid(&format!(
-        "{}Schedule#{}@goout.net",
-        info.summary_prefix, schedule.id
-    ));
+    ical_event.uid(&format!("Schedule#{}@goout.net", schedule.id));
     let uploaded_on_str = &schedule.uploaded_on.format("%Y%m%dT%H%M%S").to_string();
     ical_event.add_property("DTSTAMP", uploaded_on_str);
 
-    set_start_end(&mut ical_event, schedule.hour_ignored, info.start, info.end);
+    set_start_end(
+        &mut ical_event,
+        schedule.hour_ignored,
+        schedule.start,
+        schedule.end,
+    );
     ical_event.add_property("URL", &schedule.url);
     set_cancelled(&mut ical_event, schedule.cancelled);
 
@@ -76,7 +66,6 @@ fn create_ical_event(
     set_summary(
         &mut ical_event,
         &schedule.event,
-        info.summary_prefix,
         schedule.cancelled,
         cal_req,
     );
@@ -84,7 +73,7 @@ fn create_ical_event(
 
     #[cfg(debug_assertions)]
     {
-        eprintln!("Parsed {:?} {:?} as:", schedule, info);
+        eprintln!("Parsed {:?} as:", schedule);
         eprintln!("{}", ical_event.to_string());
     }
 
@@ -110,7 +99,6 @@ fn set_cancelled(ical_event: &mut IcalEvent, cancelled: bool) {
 fn set_summary(
     ical_event: &mut IcalEvent,
     event: &Event,
-    summary_prefix: &str,
     cancelled: bool,
     cal_req: &CalendarRequest,
 ) {
@@ -125,8 +113,7 @@ fn set_summary(
     };
 
     ical_event.summary(&format!(
-        "{}{}{} ({})",
-        summary_prefix,
+        "{}{} ({})",
         cancelled_prefix,
         event.name,
         event

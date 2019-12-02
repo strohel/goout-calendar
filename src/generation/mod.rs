@@ -38,7 +38,7 @@ struct ScheduleOnWire {
     performer_ids: Vec<u64>,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 struct Schedule {
     id: u64,
     event: Rc<Event>,
@@ -55,7 +55,7 @@ struct Schedule {
     performers: Vec<Rc<Performer>>,
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Clone, Deserialize, Debug)]
 struct NamedEntity {
     name: String,
 }
@@ -81,7 +81,7 @@ struct Performer {
     tags: Vec<String>,
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Clone, Deserialize, Debug)]
 struct Event {
     name: String,                           // "Hudební ceny Apollo 2018"
     text: String,                           // "Apollo Czech Music Critics Awards for ..."
