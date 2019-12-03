@@ -42,17 +42,6 @@ mod tests {
     use std::fs;
 
     #[test]
-    fn test_serve_bad_request() {
-        let client = Client::new(rocket()).unwrap();
-        let mut response = client.get("/services/feeder/usercalendar.ics").dispatch();
-        assert_eq!(response.status(), Status::BadRequest);
-
-        let body = response.body_string().unwrap();
-        let expected_start = "Bad request: Missing(RawStr(\"id\"))";
-        assert_eq!(&body[..expected_start.len()], expected_start);
-    }
-
-    #[test]
     fn test_serve() {
         invoke_serve(
             "/services/feeder/usercalendar.ics?id=43224&language=en",
