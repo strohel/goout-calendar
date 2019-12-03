@@ -13,7 +13,7 @@ pub(in crate) struct HandlerError {
 }
 
 impl HandlerError {
-    fn new(status: Status, text: String) -> Self {
+    const fn new(status: Status, text: String) -> Self {
         let responder = Custom(status, text);
         Self { responder }
     }
@@ -27,7 +27,7 @@ impl<'r> Responder<'r> for HandlerError {
 
 impl From<FormParseError<'_>> for HandlerError {
     fn from(parse_error: FormParseError) -> Self {
-        HandlerError::new(Status::BadRequest, format!(
+        Self::new(Status::BadRequest, format!(
             "Bad request: {:?} (see https://api.rocket.rs/v0.4/rocket/request/enum.FormParseError.html)\n",
             parse_error))
     }
@@ -36,7 +36,7 @@ impl From<FormParseError<'_>> for HandlerError {
 impl From<anyhow::Error> for HandlerError {
     fn from(e: anyhow::Error) -> Self {
         eprintln!("Uncaught handler error: {}", e);
-        HandlerError::new(
+        Self::new(
             Status::InternalServerError,
             "Something went wrong.".to_string(),
         )

@@ -161,7 +161,7 @@ fn response_to_schedules(response: EventsResponse) -> HandlerResult<Vec<Schedule
     let event_map = reference_count_map(response.events);
 
     let mut result = Vec::new();
-    for on_wire in response.schedule.into_iter() {
+    for on_wire in response.schedule {
         let venue = Rc::clone(venue_map.get(&on_wire.venue_id).with_context(|| {
             format!(
                 "Venue#{} referenced by Schedule#{} not in API response.",
@@ -213,10 +213,10 @@ pub(in crate) fn generate(client: &Client, cal_req: &CalendarRequest) -> Handler
     let mut calendar = Calendar::new();
 
     for page in 1.. {
-        let events_response = fetch_page(&client, &cal_req, page)?;
+        let events_response = fetch_page(client, cal_req, page)?;
         let has_next = events_response.has_next;
         let schedules = response_to_schedules(events_response)?;
-        for event in ical::generate_events(schedules, &cal_req) {
+        for event in ical::generate_events(schedules, cal_req) {
             calendar.push(event);
         }
 
