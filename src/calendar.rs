@@ -62,7 +62,7 @@ mod tests {
     }
 
     #[test]
-    fn test_serve_nonsplit() {
+    fn test_serve_split_false() {
         invoke_serve(
             "/services/feeder/usercalendar.ics?id=43224&language=en&split=false",
             "test_data/expected_nonsplit.ical",
@@ -70,7 +70,7 @@ mod tests {
     }
 
     #[test]
-    fn test_serve_split() {
+    fn test_serve_split_true() {
         invoke_serve(
             "/services/feeder/usercalendar.ics?id=43224&language=en&split=true",
             "test_data/expected_split.ical",
@@ -88,7 +88,7 @@ mod tests {
     }
 
     #[test]
-    fn test_serve_split_after() {
+    fn test_serve_split_true_after() {
         invoke_serve_ex(
             "/services/feeder/usercalendar.ics?id=43224&split=true&language=en&after=2020-04-01",
             "tag=liked&user=43224&page=1&language=en&source=goout.strohel.eu&after=2020-04-01",
@@ -98,7 +98,7 @@ mod tests {
     }
 
     #[test]
-    fn test_serve_extra_params() {
+    fn test_serve_extraparam() {
         invoke_serve(
             "/services/feeder/usercalendar.ics?id=43224&language=en&extraparam=value",
             "test_data/expected_nonsplit.ical",
@@ -106,7 +106,7 @@ mod tests {
     }
 
     #[test]
-    fn test_serve_split_extra_params() {
+    fn test_serve_split_true_extraparam() {
         invoke_serve(
             "/services/feeder/usercalendar.ics?id=43224&language=en&extraparam=value&split=true",
             "test_data/expected_split.ical",
