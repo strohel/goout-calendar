@@ -136,12 +136,16 @@ mod tests {
             .create();
 
         let mut response = client.get(path).dispatch();
-        goout_api_mock.assert();
-        assert_eq!(response.status(), Status::Ok);
-        assert_eq!(response.content_type(), Some(ContentType::Calendar));
 
+        let content_type_string = response.content_type().unwrap().to_string();
         let body = response.body_string().unwrap();
         let expected_body = fs::read_to_string(expected_ical_file).unwrap();
-        assert_eq!(body, expected_body);
+        // compare all at once for most descriptive failure messages by pretty_assertions
+        assert_eq!(
+            (response.status(), content_type_string.as_ref(), body),
+            (Status::Ok, "text/calendar", expected_body)
+        );
+
+        goout_api_mock.assert();
     }
 }
