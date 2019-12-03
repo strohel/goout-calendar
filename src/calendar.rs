@@ -35,7 +35,6 @@ pub(in crate) fn serve(
 
 #[cfg(test)]
 mod tests {
-    use super::*;
     use crate::rocket;
     use mockito::mock;
     use pretty_assertions::assert_eq;
@@ -113,6 +112,46 @@ mod tests {
         );
     }
 
+    #[test]
+    fn test_invalid_serve_no_id() {
+        invoke_serve_lowlevel(
+            "/services/feeder/usercalendar.ics?language=en",
+            Status::BadRequest,
+            "text/plain; charset=utf-8",
+            "Bad request: Missing(RawStr(\"id\")) (see https://api.rocket.rs/v0.4/rocket/request/enum.FormParseError.html)\n"
+        );
+    }
+
+    #[test]
+    fn test_invalid_serve_no_language() {
+        invoke_serve_lowlevel(
+            "/services/feeder/usercalendar.ics?id=123",
+            Status::BadRequest,
+            "text/plain; charset=utf-8",
+            "Bad request: Missing(RawStr(\"language\")) (see https://api.rocket.rs/v0.4/rocket/request/enum.FormParseError.html)\n"
+        );
+    }
+
+    #[test]
+    fn test_invalid_serve_bad_id() {
+        invoke_serve_lowlevel(
+            "/services/feeder/usercalendar.ics?id=nckcd&language=cs",
+            Status::BadRequest,
+            "text/plain; charset=utf-8",
+            "Bad request: BadValue(RawStr(\"id\"), RawStr(\"nckcd\")) (see https://api.rocket.rs/v0.4/rocket/request/enum.FormParseError.html)\n"
+        );
+    }
+
+    #[test]
+    fn test_invalid_serve_bad_split() {
+        invoke_serve_lowlevel(
+            "/services/feeder/usercalendar.ics?id=123&language=cs&split=gogo",
+            Status::BadRequest,
+            "text/plain; charset=utf-8",
+            "Bad request: BadValue(RawStr(\"split\"), RawStr(\"gogo\")) (see https://api.rocket.rs/v0.4/rocket/request/enum.FormParseError.html)\n"
+        );
+    }
+
     fn invoke_serve(path: &str, expected_ical_file: &str) {
         invoke_serve_ex(
             path,
@@ -128,24 +167,32 @@ mod tests {
         goout_api_resp_file: &str,
         expected_ical_file: &str,
     ) {
-        let client = Client::new(rocket()).unwrap();
-
         let goout_api_path = format!("/services/feeder/v1/events.json?{}", goout_api_params);
         let goout_api_mock = mock("GET", goout_api_path.as_str())
             .with_body_from_file(format!("test_data/{}", goout_api_resp_file))
             .create();
 
-        let mut response = client.get(path).dispatch();
-
-        let content_type_string = response.content_type().unwrap().to_string();
-        let body = response.body_string().unwrap();
         let expected_body = fs::read_to_string(expected_ical_file).unwrap();
-        // compare all at once for most descriptive failure messages by pretty_assertions
-        assert_eq!(
-            (response.status(), content_type_string.as_ref(), body),
-            (Status::Ok, "text/calendar", expected_body)
-        );
+        invoke_serve_lowlevel(path, Status::Ok, "text/calendar", &expected_body);
 
         goout_api_mock.assert();
+    }
+
+    fn invoke_serve_lowlevel(
+        path: &str,
+        expected_status: Status,
+        expected_content_type: &str,
+        expected_body: &str,
+    ) {
+        let client = Client::new(rocket()).unwrap();
+        let mut response = client.get(path).dispatch();
+
+        let content_type = response.content_type().unwrap().to_string();
+        let body = response.body_string().unwrap();
+        // compare all at once for most descriptive failure messages by pretty_assertions
+        assert_eq!(
+            (response.status(), content_type.as_ref(), body.as_ref()),
+            (expected_status, expected_content_type, expected_body)
+        );
     }
 }
