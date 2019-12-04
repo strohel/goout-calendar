@@ -210,19 +210,20 @@ fn response_to_schedules(response: EventsResponse) -> HandlerResult<Vec<Schedule
 }
 
 pub(in crate) fn generate(client: &Client, cal_req: &CalendarRequest) -> HandlerResult<String> {
-    let mut calendar = Calendar::new();
-
+    let mut schedules = Vec::<Schedule>::new();
     for page in 1.. {
         let events_response = fetch_page(client, cal_req, page)?;
         let has_next = events_response.has_next;
-        let schedules = response_to_schedules(events_response)?;
-        for event in ical::generate_events(schedules, cal_req) {
-            calendar.push(event);
-        }
+        schedules.append(&mut response_to_schedules(events_response)?);
 
         if !has_next {
             break;
         }
+    }
+
+    let mut calendar = Calendar::new();
+    for event in ical::generate_events(schedules, cal_req) {
+        calendar.push(event);
     }
 
     Ok(calendar.to_string())
