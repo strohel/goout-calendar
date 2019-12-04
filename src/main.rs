@@ -1,6 +1,5 @@
 #![feature(decl_macro, proc_macro_hygiene)]
-#![warn(clippy::all, clippy::pedantic, clippy::nursery)]
-#![allow(clippy::non_ascii_literal)]
+#![warn(clippy::all, clippy::nursery)]
 
 use rocket::{routes, Rocket};
 
