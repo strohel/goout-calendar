@@ -8,11 +8,12 @@ pub(super) fn generate_events(
     schedules: Vec<Schedule>,
     cal_req: &CalendarRequest,
 ) -> Vec<IcalEvent> {
-    let begin_prefix = match &cal_req.language[..] {
+    let language: &str = &cal_req.language;
+    let begin_prefix = match language {
         "cs" => "Začátek: ",
         _ => "Begin: ",
     };
-    let end_prefix = match &cal_req.language[..] {
+    let end_prefix = match language {
         "cs" => "Konec: ",
         _ => "End: ",
     };
@@ -31,22 +32,22 @@ pub(super) fn generate_events(
             Rc::make_mut(&mut first_day_schedule.event).name =
                 format!("{}{}", begin_prefix, schedule.event.name);
             first_day_schedule.end = schedule.start.date().and_hms(23, 59, 59);
-            events.push(create_ical_event(&first_day_schedule, cal_req));
+            events.push(create_ical_event(&first_day_schedule, language));
 
             let mut last_day_schedule = schedule.clone();
             last_day_schedule.id = 2_000_000_000_000 + schedule.id;
             Rc::make_mut(&mut last_day_schedule.event).name =
                 format!("{}{}", end_prefix, schedule.event.name);
             last_day_schedule.start = schedule.end.date().and_hms(0, 0, 0);
-            events.push(create_ical_event(&last_day_schedule, cal_req));
+            events.push(create_ical_event(&last_day_schedule, language));
         } else {
-            events.push(create_ical_event(&schedule, cal_req));
+            events.push(create_ical_event(&schedule, language));
         }
     }
     events
 }
 
-fn create_ical_event(schedule: &Schedule, cal_req: &CalendarRequest) -> IcalEvent {
+fn create_ical_event(schedule: &Schedule, language: &str) -> IcalEvent {
     let mut ical_event = IcalEvent::new();
 
     ical_event.uid(&format!("Schedule#{}@goout.net", schedule.id));
@@ -73,7 +74,7 @@ fn create_ical_event(schedule: &Schedule, cal_req: &CalendarRequest) -> IcalEven
         &mut ical_event,
         &schedule.event,
         schedule.cancelled,
-        cal_req,
+        language,
     );
     set_description(&mut ical_event, schedule);
 
@@ -102,15 +103,10 @@ fn set_cancelled(ical_event: &mut IcalEvent, cancelled: bool) {
     ical_event.add_property("STATUS", if cancelled { "CANCELLED" } else { "CONFIRMED" });
 }
 
-fn set_summary(
-    ical_event: &mut IcalEvent,
-    event: &Event,
-    cancelled: bool,
-    cal_req: &CalendarRequest,
-) {
+fn set_summary(ical_event: &mut IcalEvent, event: &Event, cancelled: bool, language: &str) {
     let cancelled_prefix = if cancelled {
         // TODO: poor man's localisation
-        match &cal_req.language[..] {
+        match language {
             "cs" => "Zrušeno: ",
             _ => "Cancelled: ",
         }
