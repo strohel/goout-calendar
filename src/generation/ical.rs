@@ -1,5 +1,5 @@
 use super::{DateTime, Event, Schedule};
-use crate::calendar::CalendarRequest;
+use crate::calendar::{CalendarRequest, LongtermHandling};
 use chrono::{Duration, Utc};
 use icalendar::{Component, Event as IcalEvent};
 use std::rc::Rc;
@@ -17,9 +17,15 @@ pub(super) fn generate_events(
         _ => "End: ",
     };
 
+    let split = match cal_req.longterm {
+        LongtermHandling::Split => true,
+        LongtermHandling::Preserve => false,
+        LongtermHandling::Aggregate => unimplemented!(),
+    };
+
     let mut events: Vec<IcalEvent> = Vec::new();
     for schedule in schedules {
-        if schedule.is_long_term && cal_req.split {
+        if schedule.is_long_term && split {
             let mut first_day_schedule = schedule.clone();
             first_day_schedule.id = 1_000_000_000_000 + schedule.id;
             Rc::make_mut(&mut first_day_schedule.event).name =

@@ -13,7 +13,7 @@ pub(in crate) struct HandlerError {
 }
 
 impl HandlerError {
-    const fn new(status: Status, text: String) -> Self {
+    pub const fn new(status: Status, text: String) -> Self {
         let responder = Custom(status, text);
         Self { responder }
     }

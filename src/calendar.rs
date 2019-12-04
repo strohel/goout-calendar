@@ -2,26 +2,67 @@ use crate::{error::HandlerError, generation};
 use reqwest::Client;
 use rocket::{
     get,
-    http::ContentType,
+    http::{ContentType, RawStr, Status},
     request::{FormParseError, LenientForm},
     response::Content,
-    FromForm,
+    FromForm, FromFormValue,
 };
 
-#[derive(FromForm)]
+#[derive(Debug, FromFormValue)]
+pub(in crate) enum LongtermHandling {
+    /// Preserve long-term events as-is: have multiple of them per day.
+    Preserve,
+    /// Split start and end events for long-term events.
+    Split,
+    /// Aggregate long-term events to max one per day.
+    Aggregate,
+}
+
 pub(in crate) struct CalendarRequest {
     pub id: u64,
     pub language: String,
     pub after: Option<String>,
-    pub split: bool,
+    pub longterm: LongtermHandling,
 }
 
-#[get("/services/feeder/usercalendar.ics?<cal_req..>")]
+// Compatibility struct to accept both v1 (split: bool) and v2 (longterm: LongtermHandling) of the API
+#[derive(Debug, FromForm)]
+pub(in crate) struct CompatibleCalendarRequest<'a> {
+    id: u64,
+    language: String,
+    after: Option<String>,
+    // Option needs to be there to tell false from not present; Result needs to be there to tell parse error from not present:
+    split: Option<Result<bool, &'a RawStr>>,
+    longterm: Option<Result<LongtermHandling, &'a RawStr>>,
+}
+
+#[get("/services/feeder/usercalendar.ics?<compat_cal_req_form..>")]
 pub(in crate) fn serve(
-    cal_req: Result<LenientForm<CalendarRequest>, FormParseError>,
+    compat_cal_req_form: Result<LenientForm<CompatibleCalendarRequest>, FormParseError>,
 ) -> Result<Content<String>, HandlerError> {
-    let cal_req = cal_req?;
-    let client = Client::new();
+    let compat_cal_req = compat_cal_req_form?.into_inner();
+    // For Err variants, we mimic internal Rocket behaviour: return the same parse error
+    let longterm = match (compat_cal_req.split, compat_cal_req.longterm) {
+        (None, None) => LongtermHandling::Preserve, // default
+        (None, Some(Ok(longterm_match))) => longterm_match,
+        (None, Some(Err(err))) => {
+            return Err(FormParseError::BadValue("longterm".into(), err).into())
+        }
+        (Some(Ok(true)), None) => LongtermHandling::Split,
+        (Some(Ok(false)), None) => LongtermHandling::Preserve,
+        (Some(Err(err)), None) => return Err(FormParseError::BadValue("split".into(), err).into()),
+        (Some(_), Some(_)) => return Err(HandlerError::new(
+            Status::BadRequest,
+            "Bad request: Please drop the deprecated 'split' parameter when using 'longterm'.\n"
+                .to_string(),
+        )),
+    };
+    let cal_req = CalendarRequest {
+        id: compat_cal_req.id,
+        language: compat_cal_req.language,
+        after: compat_cal_req.after,
+        longterm,
+    };
 
     // Normally, we would stream to output as soon as we get first page, but
     // instead we load all pages first and only then start replying. We can
@@ -29,16 +70,18 @@ pub(in crate) fn serve(
     // infrequently and in non-interactive manner. Advantage is that we can
     // properly report errors on HTTP level, and simplicity. Disadvantage is
     // high latency of first byte served.
+    let client = Client::new();
     let calendar_string = generation::generate(&client, &cal_req)?;
     Ok(Content(ContentType::Calendar, calendar_string))
 }
 
 #[cfg(test)]
 mod tests {
+    use super::*;
     use crate::rocket;
     use mockito::mock;
     use pretty_assertions::assert_eq;
-    use rocket::{http::Status, local::Client};
+    use rocket::local::Client;
     use std::fs;
 
     #[test]
@@ -46,6 +89,31 @@ mod tests {
         invoke_serve(
             "/services/feeder/usercalendar.ics?id=43224&language=en",
             "test_data/expected_nonsplit.ical",
+        );
+    }
+
+    #[test]
+    fn test_serve_longterm_preserve() {
+        invoke_serve(
+            "/services/feeder/usercalendar.ics?id=43224&language=en&longterm=preserve",
+            "test_data/expected_nonsplit.ical",
+        );
+    }
+
+    #[test]
+    fn test_serve_longterm_split() {
+        invoke_serve(
+            "/services/feeder/usercalendar.ics?id=43224&language=en&longterm=split",
+            "test_data/expected_split.ical",
+        );
+    }
+
+    #[test]
+    #[should_panic] // longterm=aggregate is not yet implemented
+    fn test_serve_longterm_aggregate() {
+        invoke_serve(
+            "/services/feeder/usercalendar.ics?id=43224&language=en&longterm=aggregate",
+            "test_data/expected_split.ical",
         );
     }
 
@@ -138,6 +206,26 @@ mod tests {
             Status::BadRequest,
             "text/plain; charset=utf-8",
             "Bad request: BadValue(RawStr(\"split\"), RawStr(\"gogo\")) (see https://api.rocket.rs/v0.4/rocket/request/enum.FormParseError.html)\n"
+        );
+    }
+
+    #[test]
+    fn test_invalid_serve_both_split_longterm() {
+        invoke_serve_lowlevel(
+            "/services/feeder/usercalendar.ics?id=123&language=cs&split=true&longterm=split",
+            Status::BadRequest,
+            "text/plain; charset=utf-8",
+            "Bad request: Please drop the deprecated 'split' parameter when using 'longterm'.\n",
+        );
+    }
+
+    #[test]
+    fn test_invalid_serve_bad_longterm() {
+        invoke_serve_lowlevel(
+            "/services/feeder/usercalendar.ics?id=123&language=cs&longterm=gagagogo",
+            Status::BadRequest,
+            "text/plain; charset=utf-8",
+            "Bad request: BadValue(RawStr(\"longterm\"), RawStr(\"gagagogo\")) (see https://api.rocket.rs/v0.4/rocket/request/enum.FormParseError.html)\n"
         );
     }
 
