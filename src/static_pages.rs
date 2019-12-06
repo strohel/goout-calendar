@@ -39,9 +39,6 @@ mod tests {
         let mut response = client.get(path).dispatch();
         assert_eq!(response.status(), Status::Ok);
         assert_eq!(response.content_type(), Some(expected_type));
-        assert_eq!(
-            &response.body_string().unwrap()[..expected_start.len()],
-            expected_start
-        );
+        assert_eq!(&response.body_string().unwrap()[..expected_start.len()], expected_start);
     }
 }

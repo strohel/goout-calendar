@@ -13,8 +13,5 @@ fn main() {
 }
 
 fn rocket() -> Rocket {
-    rocket::ignite().mount(
-        "/",
-        routes![static_pages::index, static_pages::script, calendar::serve],
-    )
+    rocket::ignite().mount("/", routes![static_pages::index, static_pages::script, calendar::serve])
 }

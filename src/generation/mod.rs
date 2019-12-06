@@ -149,10 +149,7 @@ fn fetch_page(
 }
 
 fn reference_count_map<T>(input: HashMap<u64, T>) -> HashMap<u64, Rc<T>> {
-    input
-        .into_iter()
-        .map(|(id, value)| (id, Rc::new(value)))
-        .collect()
+    input.into_iter().map(|(id, value)| (id, Rc::new(value))).collect()
 }
 
 fn response_to_schedules(response: EventsResponse) -> HandlerResult<Vec<Schedule>> {

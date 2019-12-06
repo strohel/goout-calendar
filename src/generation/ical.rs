@@ -54,12 +54,7 @@ fn create_ical_event(schedule: &Schedule, language: &str) -> IcalEvent {
     let uploaded_on_str = &schedule.uploaded_on.format("%Y%m%dT%H%M%S").to_string();
     ical_event.add_property("DTSTAMP", uploaded_on_str);
 
-    set_start_end(
-        &mut ical_event,
-        schedule.hour_ignored,
-        schedule.start,
-        schedule.end,
-    );
+    set_start_end(&mut ical_event, schedule.hour_ignored, schedule.start, schedule.end);
     ical_event.add_property("URL", &schedule.url);
     set_cancelled(&mut ical_event, schedule.cancelled);
 
@@ -70,12 +65,7 @@ fn create_ical_event(schedule: &Schedule, language: &str) -> IcalEvent {
     ));
     ical_event.add_property("GEO", &format!("{};{}", venue.latitude, venue.longitude));
 
-    set_summary(
-        &mut ical_event,
-        &schedule.event,
-        schedule.cancelled,
-        language,
-    );
+    set_summary(&mut ical_event, &schedule.event, schedule.cancelled, language);
     set_description(&mut ical_event, schedule);
 
     #[cfg(debug_assertions)]
@@ -158,10 +148,6 @@ fn set_description(ical_event: &mut IcalEvent, schedule: &Schedule) {
     description.push(&schedule.url);
 
     ical_event.description(
-        &description
-            .into_iter()
-            .filter(|e| !e.trim().is_empty())
-            .collect::<Vec<_>>()
-            .join("\n"),
+        &description.into_iter().filter(|e| !e.trim().is_empty()).collect::<Vec<_>>().join("\n"),
     );
 }
