@@ -9,6 +9,19 @@ pub(super) fn generate_events(
     cal_req: &CalendarRequest,
 ) -> Vec<IcalEvent> {
     let language: &str = &cal_req.language;
+
+    match cal_req.longterm {
+        LongtermHandling::Preserve => generate_events_preserve(schedules, language),
+        LongtermHandling::Split => generate_events_split(schedules, language),
+        LongtermHandling::Aggregate => unimplemented!(),
+    }
+}
+
+fn generate_events_preserve(schedules: Vec<Schedule>, language: &str) -> Vec<IcalEvent> {
+    schedules.iter().map(|s| create_ical_event(s, language)).collect()
+}
+
+fn generate_events_split(schedules: Vec<Schedule>, language: &str) -> Vec<IcalEvent> {
     let begin_prefix = match language {
         "cs" => "Začátek: ",
         _ => "Begin: ",
@@ -18,15 +31,9 @@ pub(super) fn generate_events(
         _ => "End: ",
     };
 
-    let split = match cal_req.longterm {
-        LongtermHandling::Split => true,
-        LongtermHandling::Preserve => false,
-        LongtermHandling::Aggregate => unimplemented!(),
-    };
-
     let mut events: Vec<IcalEvent> = Vec::new();
     for schedule in schedules {
-        if schedule.is_long_term && split {
+        if schedule.is_long_term {
             let mut first_day_schedule = schedule.clone();
             first_day_schedule.id = 1_000_000_000_000 + schedule.id;
             Rc::make_mut(&mut first_day_schedule.event).name =
