@@ -12,3 +12,8 @@ variable "zone" {
   type    = string
   default = "us-east1-b"
 }
+
+variable "image_tag" {
+  type        = string
+  description = "Docker tag of the goout-calendar image to deploy."
+}

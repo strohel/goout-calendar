@@ -4,16 +4,35 @@ steps:
   timeout: 1800s
 - name: 'gcr.io/cloud-builders/docker'
   args: ['push', 'gcr.io/$PROJECT_ID/goout-calendar:$SHORT_SHA']
-# Generate kubernetes.yaml with variables filled-in. nginx is an arbitrary
-# well-known image that contains the needed envsubst command:
-- name: 'nginx'
-  args: ['sh', '-c', 'envsubst < kubernetes.envsubst.yaml > kubernetes.yaml']
+# Deploy using Terraform, https://github.com/GoogleCloudPlatform/cloud-builders-community/tree/master/terraform/examples/local_backend
+- name: 'gcr.io/${PROJECT_ID}/terraform'
+  args: ['init']
+  dir: 'terraform'
+# Import the resource, poor man's avoidance of sharing tf state properly.
+- name: 'gcr.io/${PROJECT_ID}/terraform'
+  args: ['import', 'google_compute_instance.gce_instance', '${PROJECT_ID}/us-east1-b/calendar-micro']
+  dir: 'terraform'
   env:
-  - 'IMAGE_TAG=$SHORT_SHA'
-- name: 'gcr.io/cloud-builders/kubectl'
-  args: ['apply', '--prune', '-l', 'app=goout-calendar', '-f', 'kubernetes.yaml']
+    - "TF_VAR_project_name=${PROJECT_ID}"
+    - "TF_VAR_image_tag=${SHORT_SHA}"
+# Show what would be changed.
+- name: 'gcr.io/${PROJECT_ID}/terraform'
+  args: ['plan']
+  dir: 'terraform'
   env:
-  - 'CLOUDSDK_COMPUTE_ZONE=us-east1-b'
-  - 'CLOUDSDK_CONTAINER_CLUSTER=goout-calendar'
+    - "TF_VAR_project_name=${PROJECT_ID}"
+    - "TF_VAR_image_tag=${SHORT_SHA}"
+# Actually apply the changes to infrastructure.
+- name: 'gcr.io/${PROJECT_ID}/terraform'
+  args: ['apply', '-auto-approve']
+  dir: 'terraform'
+  env:
+    - "TF_VAR_project_name=${PROJECT_ID}"
+    - "TF_VAR_image_tag=${SHORT_SHA}"
+# Setting the new container image on the instance has no immediate effect. Reset it
+# so that the changes are applied. Reset has added benefit that it doesn't change instance
+# ephemeral static IP:
+- name: 'gcr.io/cloud-builders/gcloud'
+  args: ['compute', 'instances', 'reset', 'calendar-micro', '--zone=us-east1-b']
 images: ['gcr.io/$PROJECT_ID/goout-calendar:$SHORT_SHA']
 timeout: 1920s

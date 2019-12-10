@@ -28,10 +28,9 @@ Alternatively, enclosed [Dockerfile](Dockerfile) lets you build using
 `docker build -t goout-calendar .` and run using
 `docker run -p 80:80 goout-calendar`.
 
-You can also deploy to any [Kubernetes](https://kubernetes.io/) cluster by
-substituting the `$IMAGE_TAG` variable in [kubernetes.envsubst.yaml](kubernetes.envsubst.yaml)
-(producing `kubernetes.yaml` manifest file) and deploying the `Service` and
-`Deployment` using e.g. `kubectl apply -f kubernetes.yaml`.
+You can also deploy to [Google Cloud Platform Compute Engine](https://cloud.google.com/compute/)
+by using the [Terraform](https://www.terraform.io/docs/providers/google/index.html)
+infrastructure-as-code description in the [terraform](terraform/) directory.
 
 Finally, there is [cloudbuild.yaml](cloudbuild.yaml) configuration file for
 [Google Cloud Build (Continuous Integration)](https://cloud.google.com/cloud-build/)
