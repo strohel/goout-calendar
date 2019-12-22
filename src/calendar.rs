@@ -1,5 +1,4 @@
 use crate::{error::HandlerError, generation};
-use reqwest::Client;
 use rocket::{
     get,
     http::{ContentType, RawStr, Status},
@@ -70,8 +69,7 @@ pub(in crate) fn serve(
     // infrequently and in non-interactive manner. Advantage is that we can
     // properly report errors on HTTP level, and simplicity. Disadvantage is
     // high latency of first byte served.
-    let client = Client::new();
-    let calendar_string = generation::generate(&client, &cal_req)?;
+    let calendar_string = generation::generate(&cal_req)?;
     Ok(Content(ContentType::Calendar, calendar_string))
 }
 

@@ -1,9 +1,9 @@
 use crate::{calendar::CalendarRequest, error::HandlerResult};
 use anyhow::{anyhow, Context};
+use attohttpc;
 use icalendar::Calendar;
 #[cfg(test)]
 use mockito;
-use reqwest::Client;
 use serde::Deserialize;
 use serde_json::Value;
 use std::collections::{BTreeMap, HashMap};
@@ -115,11 +115,7 @@ impl EventsResponse {
     }
 }
 
-fn fetch_page(
-    client: &Client,
-    cal_req: &CalendarRequest,
-    page: u8,
-) -> HandlerResult<EventsResponse> {
+fn fetch_page(cal_req: &CalendarRequest, page: u8) -> HandlerResult<EventsResponse> {
     #[cfg(not(test))]
     let host = "https://goout.net";
     #[cfg(test)]
@@ -138,11 +134,17 @@ fn fetch_page(
         params.push(("after", after));
     }
 
-    let mut raw_response = client.get(endpoint_url).query(&params).send()?;
-    if let Err(e) = raw_response.error_for_status_ref() {
-        return Err(e).context(raw_response.text().unwrap_or_default());
+    let mut request = attohttpc::get(endpoint_url).params(params).try_prepare()?;
+    let raw_response = request.send()?;
+    if !raw_response.is_success() {
+        return Err(anyhow!(
+            "HTTP {} when fetching {}: {}",
+            raw_response.status(),
+            request.url(),
+            raw_response.text().unwrap_or_default()
+        ));
     }
-    eprintln!("Retrieved {}.", raw_response.url());
+    eprintln!("Retrieved {}.", request.url());
     let response: EventsResponse = raw_response.json()?;
     response.error_for_status()?;
     Ok(response)
@@ -206,10 +208,10 @@ fn response_to_schedules(response: EventsResponse) -> HandlerResult<Vec<Schedule
     Ok(result)
 }
 
-pub(in crate) fn generate(client: &Client, cal_req: &CalendarRequest) -> HandlerResult<String> {
+pub(in crate) fn generate(cal_req: &CalendarRequest) -> HandlerResult<String> {
     let mut schedules = Vec::<Schedule>::new();
     for page in 1.. {
-        let events_response = fetch_page(client, cal_req, page)?;
+        let events_response = fetch_page(cal_req, page)?;
         let has_next = events_response.has_next;
         schedules.append(&mut response_to_schedules(events_response)?);
 
