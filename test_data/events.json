@@ -95,6 +95,52 @@
       "uploadedOnISO8601": "2019-10-06T02:02:35.000+0200",
       "url": "https://goout.net/cs/vystavy/stala-expozice-mullerova-vila/iwsxc/+viibj/",
       "followersImages": []
+    },
+    {
+      "id": 5707287,
+      "announced": "2019-10-25 01:37:00",
+      "cancelled": false,
+      "currency": "CZK",
+      "end": "2020-01-26 23:59:59",
+      "endISO8601": "2020-01-26T23:59:59.000+0100",
+      "eventId": 1840351,
+      "followersCount@DEPRECATED user followerCount": 13,
+      "followersCount": 13,
+      "followerCount": 13,
+      "hourIgnore@DEPRECATED USE hourIgnored": true,
+      "hourIgnore": true,
+      "hourIgnored": true,
+      "permanent": false,
+      "pricing": "",
+      "publishOn": "2000-01-01T00:00:00.000+0100",
+      "relativeFollowers": 13,
+      "relativeFollowersInWeek": 4,
+      "sourceUrls": [
+        "https://www.gjf.cz/kalendar-akci/navzdory"
+      ],
+      "start": "2019-12-04 00:00:00",
+      "startISO8601": "2019-12-04T12:00:01.000+0100",
+      "state": "VISIBLE",
+      "tags": [],
+      "timezone": "Europe/Prague",
+      "venueId": 4123,
+      "performerIds": [],
+      "venueLocality": {
+        "id": 0,
+        "name": "Prague",
+        "enum": "CZ_PRAGUE",
+        "new": false,
+        "country": {
+          "id": 115,
+          "name": "Czechia",
+          "enum": "CZECH_REPUBLIC",
+          "shortCode": "CZ"
+        }
+      },
+      "isLongTerm": true,
+      "uploadedOnISO8601": "2019-12-23T02:26:25.000+0100",
+      "url": "https://goout.net/en/exhibitions/navzdory/botre/+mqgpo/",
+      "followersImages": []
     }
   ],
   "venues": {
@@ -240,6 +286,61 @@
       ],
       "videos": [],
       "url": "https://goout.net/cs/pamatka/mullerova-vila/wqs/"
+    },
+    "4123": {
+      "id": 4123,
+      "name": "Jaroslav Fragner Gallery",
+      "text": "The gallery was established in the course of the reconstruction of Bethlehem Chapel in the first half of the the 1950's. Its specialization has always been architecture and applied art exhibitions.",
+      "address": "Betlémské náměstí 5a",
+      "city": "Praha 1",
+      "latitude": 50.0845,
+      "longitude": 14.4179,
+      "sourceUrl": "http://www.gjf.cz/",
+      "followerCount": 185,
+      "followersCount": 185,
+      "panorama": false,
+      "eventCount": 1,
+      "state": "APPROVED",
+      "locality": {
+        "id": 0,
+        "name": "Prague",
+        "enum": "CZ_PRAGUE",
+        "new": false,
+        "country": {
+          "id": 115,
+          "name": "Czechia",
+          "enum": "CZECH_REPUBLIC",
+          "shortCode": "CZ"
+        }
+      },
+      "mainCategory": {
+        "id": 19,
+        "name": "Galleries",
+        "enum": "GALLERY"
+      },
+      "categories": {
+        "19": {
+          "id": 19,
+          "name": "Galleries",
+          "enum": "GALLERY"
+        }
+      },
+      "mainImage": {
+        "id": 445435,
+        "src": "https://goout.net/i/044/445435-%%%.jpg"
+      },
+      "images": [
+        {
+          "id": 445435,
+          "src": "https://goout.net/i/044/445435-%%%.jpg"
+        },
+        {
+          "id": 440335,
+          "src": "https://goout.net/i/044/440335-%%%.jpg"
+        }
+      ],
+      "videos": [],
+      "url": "https://goout.net/en/galleries/jaroslav-fragner-gallery/xog/"
     }
   },
   "performers": {
@@ -480,6 +581,49 @@
       "tags": [
         "Architektura",
         "Stálá"
+      ],
+      "note": "",
+      "innerScheduleIds": []
+    },
+    "1840351": {
+      "id": 1840351,
+      "name": "Navzdory",
+      "url": "https://goout.net/en/exhibitions/navzdory/botre/",
+      "state": "APPROVED",
+      "categories": {
+        "7": {
+          "id": 7,
+          "name": "Exhibitions",
+          "enum": "EXHIBITIONS"
+        }
+      },
+      "text": "",
+      "images": [
+        {
+          "id": 833239,
+          "src": "https://goout.net/i/083/833239-%%%.jpg"
+        }
+      ],
+      "videos": [],
+      "mainImage": {
+        "id": 833239,
+        "src": "https://goout.net/i/083/833239-%%%.jpg"
+      },
+      "keywords": "navzdory",
+      "performerIds": [],
+      "innerEventsCount": 0,
+      "nameNote": "",
+      "category": {
+        "id": 7,
+        "name": "Exhibitions",
+        "enum": "EXHIBITIONS"
+      },
+      "contacts": [],
+      "priority": 0,
+      "recommended": "RECOMMENDED",
+      "tags": [
+        "Architektura",
+        "Installations"
       ],
       "note": "",
       "innerScheduleIds": []

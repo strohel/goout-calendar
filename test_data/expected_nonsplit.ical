@@ -41,4 +41,17 @@ UID:Schedule#3536471@goout.net
 URL:https://goout.net/cs/vystavy/stala-expozice-mullerova-vila/iwsxc/+viibj
  /
 END:VEVENT
+BEGIN:VEVENT
+DESCRIPTION:https://goout.net/en/exhibitions/navzdory/botre/+mqgpo/
+DTEND;VALUE=DATE:20200127
+DTSTAMP:20191223T022625
+DTSTART;VALUE=DATE:20191204
+GEO:50.0845;14.4179
+LOCATION:Jaroslav Fragner Gallery, Betlémské náměstí 5a, Praha 1, Czec
+ hia
+STATUS:CONFIRMED
+SUMMARY:Navzdory (Exhibitions)
+UID:Schedule#5707287@goout.net
+URL:https://goout.net/en/exhibitions/navzdory/botre/+mqgpo/
+END:VEVENT
 END:VCALENDAR
