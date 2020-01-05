@@ -38,14 +38,14 @@ fn generate_events_split(schedules: Vec<Schedule>, language: &str) -> Vec<IcalEv
             first_day_schedule.id = 1_000_000_000_000 + schedule.id;
             Rc::make_mut(&mut first_day_schedule.event).name =
                 format!("{}{}", begin_prefix, schedule.event.name);
-            first_day_schedule.end = schedule.start.date().and_hms(23, 59, 59);
+            first_day_schedule.end = schedule.start.date().and_hms(0, 0, 0) + Duration::days(1);
             events.push(create_ical_event(&first_day_schedule, language));
 
             let mut last_day_schedule = schedule.clone();
             last_day_schedule.id = 2_000_000_000_000 + schedule.id;
             Rc::make_mut(&mut last_day_schedule.event).name =
                 format!("{}{}", end_prefix, schedule.event.name);
-            last_day_schedule.start = schedule.end.date().and_hms(0, 0, 0);
+            last_day_schedule.start = schedule.end.date().and_hms(0, 0, 0) - Duration::days(1);
             events.push(create_ical_event(&last_day_schedule, language));
         } else {
             events.push(create_ical_event(&schedule, language));
@@ -85,14 +85,12 @@ fn create_ical_event(schedule: &Schedule, language: &str) -> IcalEvent {
 }
 
 fn set_start_end(ical_event: &mut IcalEvent, hour_ignored: bool, start: DateTime, end: DateTime) {
-    // end date(time) is exclusive in iCalendar, but apparently inclusive in GoOut API
-    let ical_end = end + Duration::seconds(1);
     if hour_ignored {
         ical_event.start_date(start.date());
-        ical_event.end_date(ical_end.date());
+        ical_event.end_date(end.date());
     } else {
         ical_event.starts(start.with_timezone(&Utc));
-        ical_event.ends(ical_end.with_timezone(&Utc));
+        ical_event.ends(end.with_timezone(&Utc));
     }
 }
 

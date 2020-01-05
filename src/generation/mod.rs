@@ -1,6 +1,7 @@
 use crate::{calendar::CalendarRequest, error::HandlerResult};
 use anyhow::{anyhow, Context};
 use attohttpc;
+use chrono::Duration;
 use icalendar::Calendar;
 #[cfg(test)]
 use mockito;
@@ -25,7 +26,7 @@ struct ScheduleOnWire {
     #[serde(rename = "startISO8601")]
     start: DateTime,
     #[serde(rename = "endISO8601")]
-    end: DateTime,
+    end: DateTime, // inclusive
     #[serde(rename = "uploadedOnISO8601")]
     uploaded_on: DateTime,
     hour_ignored: bool,
@@ -45,7 +46,7 @@ struct Schedule {
     url: String,
     cancelled: bool,
     start: DateTime,
-    end: DateTime,
+    end: DateTime, // exclusive
     uploaded_on: DateTime,
     hour_ignored: bool,
     is_long_term: bool,
@@ -194,7 +195,8 @@ fn response_to_schedules(response: EventsResponse) -> HandlerResult<Vec<Schedule
             url: on_wire.url,
             cancelled: on_wire.cancelled,
             start: on_wire.start,
-            end: on_wire.end,
+            // end date(time) is exclusive in Schedule, but apparently inclusive in GoOut API
+            end: on_wire.end + Duration::seconds(1),
             uploaded_on: on_wire.uploaded_on,
             hour_ignored: on_wire.hour_ignored,
             is_long_term: on_wire.is_long_term,
