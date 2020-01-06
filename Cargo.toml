@@ -6,7 +6,7 @@ edition = "2018"
 
 [dependencies]
 anyhow = "1.0"
-attohttpc = { version = "0.7", features = ["json"] }
+attohttpc = { version = "0.9", features = ["json"] }
 chrono = { version = "0.4", features = ["serde"] }
 icalendar = "0.7"
 rocket = "0.4"
@@ -14,5 +14,5 @@ serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 
 [dev-dependencies]
-mockito = "0.21"
+mockito = "0.22"
 pretty_assertions = "0.6"
