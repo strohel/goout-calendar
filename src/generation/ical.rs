@@ -1,4 +1,4 @@
-use super::{DateTime, Event, Schedule};
+use super::{DateTime, Schedule};
 use crate::calendar::{CalendarRequest, LongtermHandling};
 use chrono::{Duration, Utc};
 use icalendar::{Component, Event as IcalEvent};
@@ -72,8 +72,8 @@ fn create_ical_event(schedule: &Schedule, language: &str) -> IcalEvent {
     ));
     ical_event.add_property("GEO", &format!("{};{}", venue.latitude, venue.longitude));
 
-    set_summary(&mut ical_event, &schedule.event, schedule.cancelled, language);
-    set_description(&mut ical_event, schedule);
+    ical_event.summary(&get_summary(schedule, language));
+    ical_event.description(&get_description(schedule));
 
     #[cfg(debug_assertions)]
     {
@@ -98,8 +98,8 @@ fn set_cancelled(ical_event: &mut IcalEvent, cancelled: bool) {
     ical_event.add_property("STATUS", if cancelled { "CANCELLED" } else { "CONFIRMED" });
 }
 
-fn set_summary(ical_event: &mut IcalEvent, event: &Event, cancelled: bool, language: &str) {
-    let cancelled_prefix = if cancelled {
+fn get_summary(schedule: &Schedule, language: &str) -> String {
+    let cancelled_prefix = if schedule.cancelled {
         // TODO: poor man's localisation
         match language {
             "cs" => "Zrušeno: ",
@@ -109,20 +109,21 @@ fn set_summary(ical_event: &mut IcalEvent, event: &Event, cancelled: bool, langu
         ""
     };
 
-    ical_event.summary(&format!(
+    format!(
         "{}{} ({})",
         cancelled_prefix,
-        event.name,
-        event
+        schedule.event.name,
+        schedule
+            .event
             .categories
             .values()
             .map(|c| &c.name[..]) // convert to &str, see https://stackoverflow.com/a/29026565/4345715
             .collect::<Vec<_>>()
             .join(", ")
-    ));
+    )
 }
 
-fn set_description(ical_event: &mut IcalEvent, schedule: &Schedule) {
+fn get_description(schedule: &Schedule) -> String {
     let mut description = Vec::<&str>::new();
 
     let performer_names = schedule
@@ -152,7 +153,5 @@ fn set_description(ical_event: &mut IcalEvent, schedule: &Schedule) {
     // Google Calendar ignores URL property, add it to text
     description.push(&schedule.url);
 
-    ical_event.description(
-        &description.into_iter().filter(|e| !e.trim().is_empty()).collect::<Vec<_>>().join("\n"),
-    );
+    description.into_iter().filter(|e| !e.trim().is_empty()).collect::<Vec<_>>().join("\n")
 }
