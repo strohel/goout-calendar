@@ -75,12 +75,6 @@ fn create_ical_event(schedule: &Schedule, language: &str) -> IcalEvent {
     ical_event.summary(&get_summary(schedule, language));
     ical_event.description(&get_description(schedule));
 
-    #[cfg(debug_assertions)]
-    {
-        eprintln!("Parsed {:?} as:", schedule);
-        eprintln!("{}", ical_event.to_string());
-    }
-
     ical_event
 }
 
