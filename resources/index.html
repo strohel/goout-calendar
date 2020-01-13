@@ -49,10 +49,11 @@
         <option value="et">Eesti</option>
       </select>
     </p>
-    <p>Show long-term events as
-      <select id="splitLongTerm" onchange="inputChanged()">
-        <option value="" selected>long multi-day events</option>
-        <option value="split">separate events for start and end</option>
+    <p>Show long-term events
+      <select id="longTerm" onchange="inputChanged()">
+        <option value="preserve" selected>as long multi-day events</option>
+        <option value="split">as separate events for start and end</option>
+        <option value="aggregate">aggregated, max one entry per day</option>
       </select>
     <p>
       <input id='input-http' type="url" placeholder="HTTP URL to iCalendar" size=90 readonly>

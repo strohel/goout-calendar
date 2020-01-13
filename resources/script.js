@@ -9,7 +9,7 @@ function inputChanged() {
         var id = convertTextToId(value)
     }
     catch(err) {
-        var msg = "Invalid textual ID '" + value + "': " + err
+        var msg = "Invalid textual ID '" + value + "': " + err;
         setUrls(msg, msg);
         return;
     }
@@ -25,10 +25,8 @@ function inputChanged() {
         http_url += "&after=" + after_value;
     }
 
-    var split_value = document.getElementById("splitLongTerm").value;
-    if (split_value) {
-        http_url += "&split=true";
-    }
+    var longterm_value = document.getElementById("longTerm").value;
+    http_url += "&longterm=" + longterm_value;
 
     var webcal_url = http_url.replace(/^https?/, "webcal");
     setUrls(http_url, webcal_url);
