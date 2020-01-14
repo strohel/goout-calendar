@@ -7,6 +7,7 @@ edition = "2018"
 [dependencies]
 anyhow = "1.0"
 attohttpc = { version = "0.9", features = ["json"] }
+bitflags = "1.2"
 chrono = { version = "0.4", features = ["serde"] }
 icalendar = "0.7"
 rocket = "0.4"

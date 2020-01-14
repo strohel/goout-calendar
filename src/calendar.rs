@@ -107,11 +107,10 @@ mod tests {
     }
 
     #[test]
-    #[should_panic] // longterm=aggregate is not yet implemented
     fn test_serve_longterm_aggregate() {
         invoke_serve(
             "/services/feeder/usercalendar.ics?id=43224&language=en&longterm=aggregate",
-            "test_data/expected_split.ical",
+            "test_data/expected_aggregate.ical",
         );
     }
 

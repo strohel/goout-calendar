@@ -1,0 +1,81 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:ICALENDAR-RS
+CALSCALE:GREGORIAN
+BEGIN:VEVENT
+DESCRIPTION:Lana Del Rey (Alternativa/Indie, Dream Pop, Pop)\nEUR 69.65\nht
+ tps://goout.net/cs/koncerty/lana-del-rey/sxape/+egben/
+DTEND:20200302T230000Z
+DTSTAMP:20191006T023433
+DTSTART:20200302T190000Z
+GEO:52.5063;13.4436
+LOCATION:Mercedes-Benz Arena, Mercedes Platz 1, Berlin, Německo
+STATUS:CONFIRMED
+SUMMARY:Lana Del Rey (Koncerty)
+UID:Schedule#5141404@goout.net
+URL:https://goout.net/cs/koncerty/lana-del-rey/sxape/+egben/
+END:VEVENT
+BEGIN:VEVENT
+DESCRIPTION:2016-01-01 - 2028-07-14\n\nCZK 130–300\n\nStálá expozice M
+ üllerovy vily představuje luxusní obydlí připomínající prvorepublik
+ ový životní styl rodiny, která právem patřila do pražské vyšší s
+ polečnosti. Interiéry, které ze značné části navrhl sám Adolf Loos,
+  překvapí svou důmyslností jak v ohledech využití prostoru, tak volbo
+ u materiálů a rozmanité barevnosti. Veškeré zařízení vyniká svým 
+ kvalitním provedením. Adolf Loos vždy spolupracoval jen s těmi nejlepš
+ ími výrobci, na něž kladl vysoké nároky. Spojení přepychu s jednodu
+ chostí a funkčností potvrzuje Müllerovu vilu v roli jedinečného díla
+  moderní architektury a designu.\n\n*Otevírací doba:* Prohlídky probíh
+ ají v úterý, čtvrtky, soboty a neděle v 09:00, 11:00, 13:00, 15:00, 17
+ :00. Návštěva je možná pouze po předchozí rezervaci.\n\nhttps://goou
+ t.net/cs/vystavy/stala-expozice-mullerova-vila/iwsxc/+viibj/
+DTEND;VALUE=DATE:20191204
+DTSTAMP:20191006T020235
+DTSTART;VALUE=DATE:20160101
+GEO:50.0924;14.3785
+LOCATION:Müllerova vila, Nad Hradním vodojemem 14/642, Praha 6 – Stře
+ šovice, Česko
+STATUS:CONFIRMED
+SUMMARY:Stálá expozice: Müllerova vila (Výstavy)
+UID:LongTermSchedule2016-01-01@goout.net
+URL:https://goout.net/cs/vystavy/stala-expozice-mullerova-vila/iwsxc/+viibj
+ /
+END:VEVENT
+BEGIN:VEVENT
+DESCRIPTION:Stálá expozice: Müllerova vila (Výstavy)\n2016-01-01 - 2028
+ -07-14\nCZK 130–300\nhttps://goout.net/cs/vystavy/stala-expozice-mullerov
+ a-vila/iwsxc/+viibj/\n\nNavzdory (Exhibitions)\n2019-12-04 - 2020-01-27\nht
+ tps://goout.net/en/exhibitions/navzdory/botre/+mqgpo/
+DTEND;VALUE=DATE:20200127
+DTSTAMP:20191006T020235
+DTSTART;VALUE=DATE:20191204
+SUMMARY:2 long-term events
+UID:LongTermSchedule2019-12-04@goout.net
+END:VEVENT
+BEGIN:VEVENT
+DESCRIPTION:2016-01-01 - 2028-07-14\n\nCZK 130–300\n\nStálá expozice M
+ üllerovy vily představuje luxusní obydlí připomínající prvorepublik
+ ový životní styl rodiny, která právem patřila do pražské vyšší s
+ polečnosti. Interiéry, které ze značné části navrhl sám Adolf Loos,
+  překvapí svou důmyslností jak v ohledech využití prostoru, tak volbo
+ u materiálů a rozmanité barevnosti. Veškeré zařízení vyniká svým 
+ kvalitním provedením. Adolf Loos vždy spolupracoval jen s těmi nejlepš
+ ími výrobci, na něž kladl vysoké nároky. Spojení přepychu s jednodu
+ chostí a funkčností potvrzuje Müllerovu vilu v roli jedinečného díla
+  moderní architektury a designu.\n\n*Otevírací doba:* Prohlídky probíh
+ ají v úterý, čtvrtky, soboty a neděle v 09:00, 11:00, 13:00, 15:00, 17
+ :00. Návštěva je možná pouze po předchozí rezervaci.\n\nhttps://goou
+ t.net/cs/vystavy/stala-expozice-mullerova-vila/iwsxc/+viibj/
+DTEND;VALUE=DATE:20280714
+DTSTAMP:20191006T020235
+DTSTART;VALUE=DATE:20200127
+GEO:50.0924;14.3785
+LOCATION:Müllerova vila, Nad Hradním vodojemem 14/642, Praha 6 – Stře
+ šovice, Česko
+STATUS:CONFIRMED
+SUMMARY:Stálá expozice: Müllerova vila (Výstavy)
+UID:LongTermSchedule2020-01-27@goout.net
+URL:https://goout.net/cs/vystavy/stala-expozice-mullerova-vila/iwsxc/+viibj
+ /
+END:VEVENT
+END:VCALENDAR
