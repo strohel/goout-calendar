@@ -19,34 +19,48 @@ pub(super) fn generate_events(
     }
 }
 
+enum EventPhase {
+    Begin,
+    BeginEnd,
+    End,
+    Continued,
+}
+
+impl EventPhase {
+    fn prefix(self, lang: &str) -> &'static str {
+        // TODO: poor man's localization
+        match (self, lang) {
+            (EventPhase::Begin, "cs") => "Začátek: ",
+            (EventPhase::Begin, _) => "Begin: ",
+            (EventPhase::BeginEnd, "cs") => "Začátek a konec: ",
+            (EventPhase::BeginEnd, _) => "Begin and end: ",
+            (EventPhase::End, "cs") => "Konec: ",
+            (EventPhase::End, _) => "End: ",
+            (EventPhase::Continued, "cs") => "Pokračující: ",
+            (EventPhase::Continued, _) => "Continued: ",
+        }
+    }
+}
+
 fn generate_events_preserve(schedules: Vec<Schedule>, language: &str) -> Vec<IcalEvent> {
     schedules.iter().map(|s| create_ical_event(s, language)).collect()
 }
 
 fn generate_events_split(schedules: Vec<Schedule>, language: &str) -> Vec<IcalEvent> {
-    let begin_prefix = match language {
-        "cs" => "Začátek: ",
-        _ => "Begin: ",
-    };
-    let end_prefix = match language {
-        "cs" => "Konec: ",
-        _ => "End: ",
-    };
-
     let mut events: Vec<IcalEvent> = Vec::new();
     for schedule in schedules {
         if schedule.is_long_term {
             let mut first_day_schedule = schedule.clone();
             first_day_schedule.id = 1_000_000_000_000 + schedule.id;
             Rc::make_mut(&mut first_day_schedule.event).name =
-                format!("{}{}", begin_prefix, schedule.event.name);
+                format!("{}{}", EventPhase::Begin.prefix(language), schedule.event.name);
             first_day_schedule.end = schedule.start.date().and_hms(0, 0, 0) + Duration::days(1);
             events.push(create_ical_event(&first_day_schedule, language));
 
             let mut last_day_schedule = schedule.clone();
             last_day_schedule.id = 2_000_000_000_000 + schedule.id;
             Rc::make_mut(&mut last_day_schedule.event).name =
-                format!("{}{}", end_prefix, schedule.event.name);
+                format!("{}{}", EventPhase::End.prefix(language), schedule.event.name);
             last_day_schedule.start = schedule.end.date().and_hms(0, 0, 0) - Duration::days(1);
             events.push(create_ical_event(&last_day_schedule, language));
         } else {
