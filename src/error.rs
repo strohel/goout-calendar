@@ -35,7 +35,7 @@ impl From<FormParseError<'_>> for HandlerError {
 
 impl From<anyhow::Error> for HandlerError {
     fn from(e: anyhow::Error) -> Self {
-        eprintln!("Uncaught handler error: {}", e);
-        Self::new(Status::InternalServerError, "Something went wrong.".to_string())
+        eprintln!("Uncaught handler error: {:?}", e);
+        Self::new(Status::InternalServerError, format!("Something went wrong. {:?}", e))
     }
 }
