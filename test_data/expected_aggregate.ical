@@ -42,14 +42,15 @@ URL:https://goout.net/cs/vystavy/stala-expozice-mullerova-vila/iwsxc/+viibj
  /
 END:VEVENT
 BEGIN:VEVENT
-DESCRIPTION:Stálá expozice: Müllerova vila (Výstavy)\n2016-01-01 - 2028
- -07-14\nCZK 130–300\nhttps://goout.net/cs/vystavy/stala-expozice-mullerov
- a-vila/iwsxc/+viibj/\n\nNavzdory (Exhibitions)\n2019-12-04 - 2020-01-27\nht
- tps://goout.net/en/exhibitions/navzdory/botre/+mqgpo/
+DESCRIPTION:Begin and end: Navzdory (Exhibitions)\n2019-12-04 - 2020-01-27\
+ nhttps://goout.net/en/exhibitions/navzdory/botre/+mqgpo/\n\nContinued: Stá
+ lá expozice: Müllerova vila (Výstavy)\n2016-01-01 - 2028-07-14\nCZK 130
+ –300\nhttps://goout.net/cs/vystavy/stala-expozice-mullerova-vila/iwsxc/+v
+ iibj/
 DTEND;VALUE=DATE:20200127
 DTSTAMP:20191006T020235
 DTSTART;VALUE=DATE:20191204
-SUMMARY:2 long-term events
+SUMMARY:1 beginning, 1 ending, 1 continued
 UID:LongTermSchedule2019-12-04@goout.net
 END:VEVENT
 BEGIN:VEVENT

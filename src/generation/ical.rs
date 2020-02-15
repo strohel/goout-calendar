@@ -19,7 +19,9 @@ pub(super) fn generate_events(
     }
 }
 
+#[derive(Clone, Copy, Debug, Eq, Ord, PartialEq, PartialOrd)]
 enum EventPhase {
+    // order of definition here prescribes order in which the entries appear in lists
     Begin,
     BeginEnd,
     End,
@@ -38,6 +40,16 @@ impl EventPhase {
             (EventPhase::End, _) => "End: ",
             (EventPhase::Continued, "cs") => "Pokračující: ",
             (EventPhase::Continued, _) => "Continued: ",
+        }
+    }
+
+    fn format_count(self, count: usize, _lang: &str) -> String {
+        // TODO: localise
+        match self {
+            EventPhase::Begin => format!("{} beginning", count),
+            EventPhase::End => format!("{} ending", count),
+            EventPhase::Continued => format!("{} continued", count),
+            EventPhase::BeginEnd => unimplemented!("should not be used"),
         }
     }
 }
@@ -106,7 +118,6 @@ fn render_events_from_breakdays(events: &mut Vec<IcalEvent>, breakdays: &BreakDa
 
     for (&date, breakday) in breakdays.iter() {
         if !active_schedules.is_empty() {
-            // TODO: mark somehow starting or ending events?
             events.push(render_aggregate_event(date_cursor, date, &active_schedules, lang));
         }
         active_schedules.retain(|s| !breakday.end_ids.contains(&s.id));
@@ -141,24 +152,54 @@ fn render_aggregate_event(
             schedule.end.naive_local().date(),
             get_description(schedule, OptionalDescFields::default())
         ));
-    } else {
-        set_dtstamp(&mut ical_event, schedules[0]);
-        ical_event.summary(&format!("{} long-term events", schedules.len())); // TODO: localisation
-        ical_event.description(
-            &schedules
-                .iter()
-                .map(|s| get_longterm_part_description(s, lang))
-                .collect::<Vec<_>>()
-                .join("\n\n"),
-        );
-    };
+        return ical_event;
+    }
+
+    set_dtstamp(&mut ical_event, schedules[0]);
+
+    let mut categorised: BTreeMap<EventPhase, Vec<&Schedule>> = BTreeMap::new();
+    let mut counts: BTreeMap<EventPhase, usize> = BTreeMap::new();
+    for s in schedules.iter() {
+        use EventPhase::*;
+        let phase = match (s.start.naive_local().date() == start, s.end.naive_local().date() == end)
+        {
+            (true, true) => BeginEnd,
+            (true, false) => Begin,
+            (false, true) => End,
+            (false, false) => Continued,
+        };
+        categorised.entry(phase).or_default().push(s);
+
+        let count_phases = if phase == BeginEnd { vec![Begin, End] } else { vec![phase] };
+        for count_phase in count_phases {
+            *counts.entry(count_phase).or_default() += 1;
+        }
+    }
+
+    ical_event.summary(
+        &counts
+            .into_iter()
+            .map(|(phase, len)| phase.format_count(len, lang))
+            .collect::<Vec<_>>()
+            .join(", "),
+    );
+    ical_event.description(
+        &categorised
+            .iter()
+            .flat_map(|(phase, schedules)| {
+                schedules.iter().map(move |s| get_longterm_part_description(*phase, s, lang))
+            })
+            .collect::<Vec<_>>()
+            .join("\n\n"),
+    );
 
     ical_event
 }
 
-fn get_longterm_part_description(schedule: &Schedule, lang: &str) -> String {
+fn get_longterm_part_description(phase: EventPhase, schedule: &Schedule, lang: &str) -> String {
     format!(
-        "{}\n{} - {}\n{}",
+        "{}{}\n{} - {}\n{}",
+        phase.prefix(lang),
         get_summary(schedule, lang),
         schedule.start.naive_local().date(), // TODO: deduplicate
         schedule.end.naive_local().date(),
