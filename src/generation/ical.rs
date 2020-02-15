@@ -19,6 +19,21 @@ pub(super) fn generate_events(
     }
 }
 
+trait ScheduleHelper {
+    fn start_date(&self) -> NaiveDate;
+    fn end_date(&self) -> NaiveDate;
+}
+
+impl ScheduleHelper for Schedule {
+    fn start_date(&self) -> NaiveDate {
+        self.start.naive_local().date()
+    }
+
+    fn end_date(&self) -> NaiveDate {
+        self.end.naive_local().date()
+    }
+}
+
 #[derive(Clone, Copy, Debug, Eq, Ord, PartialEq, PartialOrd)]
 enum EventPhase {
     // order of definition here prescribes order in which the entries appear in lists
@@ -101,10 +116,10 @@ fn generate_events_aggregate(schedules: Vec<Schedule>, lang: &str) -> Vec<IcalEv
             continue;
         }
 
-        let start_breakday = breakdays.entry(schedule.start.naive_local().date()).or_default();
+        let start_breakday = breakdays.entry(schedule.start_date()).or_default();
         start_breakday.starts.push(schedule);
 
-        let end_breakday = breakdays.entry(schedule.end.naive_local().date()).or_default();
+        let end_breakday = breakdays.entry(schedule.end_date()).or_default();
         end_breakday.end_ids.insert(schedule.id);
     }
 
@@ -148,8 +163,8 @@ fn render_aggregate_event(
 
         ical_event.description(&format!(
             "{} - {}\n\n{}",
-            schedule.start.naive_local().date(),
-            schedule.end.naive_local().date(),
+            schedule.start_date(),
+            schedule.end_date(),
             get_description(schedule, OptionalDescFields::default())
         ));
         return ical_event;
@@ -161,8 +176,7 @@ fn render_aggregate_event(
     let mut counts: BTreeMap<EventPhase, usize> = BTreeMap::new();
     for s in schedules.iter() {
         use EventPhase::*;
-        let phase = match (s.start.naive_local().date() == start, s.end.naive_local().date() == end)
-        {
+        let phase = match (s.start_date() == start, s.end_date() == end) {
             (true, true) => BeginEnd,
             (true, false) => Begin,
             (false, true) => End,
@@ -201,8 +215,8 @@ fn get_longterm_part_description(phase: EventPhase, schedule: &Schedule, lang: &
         "{}{}\n{} - {}\n{}",
         phase.prefix(lang),
         get_summary(schedule, lang),
-        schedule.start.naive_local().date(), // TODO: deduplicate
-        schedule.end.naive_local().date(),
+        schedule.start_date(),
+        schedule.end_date(),
         get_description(schedule, OptionalDescFields::empty())
     )
 }
