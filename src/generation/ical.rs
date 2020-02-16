@@ -253,7 +253,7 @@ fn set_dtstamp(ical_event: &mut IcalEvent, schedule: &Schedule) {
 }
 
 fn set_start_end(ical_event: &mut IcalEvent, schedule: &Schedule) {
-    if schedule.hour_ignored {
+    if schedule.hour_ignored || schedule.is_long_term {
         ical_event.start_date(schedule.start.date());
         ical_event.end_date(schedule.end.date());
     } else {

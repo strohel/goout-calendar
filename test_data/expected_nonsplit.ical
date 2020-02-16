@@ -29,9 +29,9 @@ DESCRIPTION:CZK 130–300\n\nStálá expozice Müllerovy vily představuje
  boty a neděle v 09:00, 11:00, 13:00, 15:00, 17:00. Návštěva je možná 
  pouze po předchozí rezervaci.\n\nhttps://goout.net/cs/vystavy/stala-expoz
  ice-mullerova-vila/iwsxc/+viibj/
-DTEND:20280713T220000Z
+DTEND;VALUE=DATE:20280714
 DTSTAMP:20191006T020235
-DTSTART:20160101T110000Z
+DTSTART;VALUE=DATE:20160101
 GEO:50.0924;14.3785
 LOCATION:Müllerova vila, Nad Hradním vodojemem 14/642, Praha 6 – Stře
  šovice, Česko
