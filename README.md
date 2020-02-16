@@ -28,9 +28,10 @@ Alternatively, enclosed [Dockerfile](Dockerfile) lets you build using
 `docker build -t goout-calendar .` and run using
 `docker run -p 80:80 goout-calendar`.
 
-You can also deploy to [Google Cloud Platform Compute Engine](https://cloud.google.com/compute/)
-by using the [Terraform](https://www.terraform.io/docs/providers/google/index.html)
-infrastructure-as-code description in the [terraform](terraform/) directory.
+You can also deploy any cloud environment supporting Knative, for example
+[Google Cloud Run](https://cloud.google.com/run/) by using the
+[knativeservice.envsubst.yaml](knativeservice.envsubst.yaml) Knative service
+definition file.
 
 Finally, there is [cloudbuild.yaml](cloudbuild.yaml) configuration file for
 [Google Cloud Build (Continuous Integration)](https://cloud.google.com/cloud-build/)

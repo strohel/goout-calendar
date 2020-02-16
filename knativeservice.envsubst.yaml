@@ -1,0 +1,20 @@
+# This is a Knative service definition for goout-calendar service.
+# The file contains substitutions to be replaced by envsubst.
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: goout-calendar
+spec:
+  template:
+    metadata:
+      annotations:
+        autoscaling.knative.dev/maxScale: '10'
+    spec:
+      timeoutSeconds: 300
+      containerConcurrency: 80
+      containers:
+        - image: gcr.io/strohel-goout-calendar/goout-calendar:$SHORT_SHA
+          resources:
+            limits:
+              cpu: 1000m
+              memory: 128Mi

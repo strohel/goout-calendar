@@ -4,35 +4,12 @@ steps:
   timeout: 1800s
 - name: 'gcr.io/cloud-builders/docker'
   args: ['push', 'gcr.io/$PROJECT_ID/goout-calendar:$SHORT_SHA']
-# Deploy using Terraform, https://github.com/GoogleCloudPlatform/cloud-builders-community/tree/master/terraform/examples/local_backend
-- name: 'gcr.io/${PROJECT_ID}/terraform'
-  args: ['init']
-  dir: 'terraform'
-# Import the resource, poor man's avoidance of sharing tf state properly.
-- name: 'gcr.io/${PROJECT_ID}/terraform'
-  args: ['import', 'google_compute_instance.gce_instance', '${PROJECT_ID}/us-east1-b/calendar-micro']
-  dir: 'terraform'
-  env:
-    - "TF_VAR_project_name=${PROJECT_ID}"
-    - "TF_VAR_image_tag=${SHORT_SHA}"
-# Show what would be changed.
-- name: 'gcr.io/${PROJECT_ID}/terraform'
-  args: ['plan']
-  dir: 'terraform'
-  env:
-    - "TF_VAR_project_name=${PROJECT_ID}"
-    - "TF_VAR_image_tag=${SHORT_SHA}"
-# Actually apply the changes to infrastructure.
-- name: 'gcr.io/${PROJECT_ID}/terraform'
-  args: ['apply', '-auto-approve']
-  dir: 'terraform'
-  env:
-    - "TF_VAR_project_name=${PROJECT_ID}"
-    - "TF_VAR_image_tag=${SHORT_SHA}"
-# Setting the new container image on the instance has no immediate effect. Reset it
-# so that the changes are applied. Reset has added benefit that it doesn't change instance
-# ephemeral static IP:
+# Generate knativeservice.yaml with variables filled-in. nginx is an arbitrary
+# well-known image that contains the needed envsubst command:
+- name: 'nginx'
+  args: ['sh', '-c', 'envsubst < knativeservice.envsubst.yaml > knativeservice.yaml']
+# Deploy to Google Cloud Run using Knative service definition:
 - name: 'gcr.io/cloud-builders/gcloud'
-  args: ['compute', 'instances', 'reset', 'calendar-micro', '--zone=us-east1-b']
+  args: ['beta', 'run', 'services', 'replace', 'knativeservice.yaml', '--platform=managed', '--region=us-east1']
 images: ['gcr.io/$PROJECT_ID/goout-calendar:$SHORT_SHA']
 timeout: 1920s

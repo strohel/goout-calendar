@@ -27,5 +27,6 @@ COPY --from=build /install/bin/goout-calendar /app/
 COPY Rocket.toml /app/
 COPY resources /app/resources
 
-EXPOSE 80
-CMD ["/app/goout-calendar"]
+ENV PORT=8080
+EXPOSE $PORT
+CMD ["sh", "-c", "ROCKET_PORT=$PORT /app/goout-calendar"]
