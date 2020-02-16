@@ -8,6 +8,8 @@ steps:
 # well-known image that contains the needed envsubst command:
 - name: 'nginx'
   args: ['sh', '-c', 'envsubst < knativeservice.envsubst.yaml > knativeservice.yaml']
+  env:
+  - 'IMAGE_TAG=$SHORT_SHA'
 # Deploy to Google Cloud Run using Knative service definition:
 - name: 'gcr.io/cloud-builders/gcloud'
   args: ['beta', 'run', 'services', 'replace', 'knativeservice.yaml', '--platform=managed', '--region=us-east1']
