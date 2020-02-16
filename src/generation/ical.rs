@@ -1,4 +1,4 @@
-use super::{DateTime, Schedule};
+use super::Schedule;
 use crate::calendar::{CalendarRequest, LongtermHandling};
 use bitflags::bitflags;
 use chrono::{naive::MIN_DATE, Duration, NaiveDate, TimeZone, Utc};
@@ -241,7 +241,7 @@ fn create_ical_event(schedule: &Schedule, language: &str) -> IcalEvent {
     fill_basic_ical_event_props(&mut ical_event, schedule, language);
 
     ical_event.uid(&format!("Schedule#{}@goout.net", schedule.id));
-    set_start_end(&mut ical_event, schedule.hour_ignored, schedule.start, schedule.end);
+    set_start_end(&mut ical_event, schedule);
     ical_event.description(&get_description(schedule, OptionalDescFields::default()));
 
     ical_event
@@ -252,13 +252,13 @@ fn set_dtstamp(ical_event: &mut IcalEvent, schedule: &Schedule) {
     ical_event.add_property("DTSTAMP", uploaded_on_str);
 }
 
-fn set_start_end(ical_event: &mut IcalEvent, hour_ignored: bool, start: DateTime, end: DateTime) {
-    if hour_ignored {
-        ical_event.start_date(start.date());
-        ical_event.end_date(end.date());
+fn set_start_end(ical_event: &mut IcalEvent, schedule: &Schedule) {
+    if schedule.hour_ignored {
+        ical_event.start_date(schedule.start.date());
+        ical_event.end_date(schedule.end.date());
     } else {
-        ical_event.starts(start.with_timezone(&Utc));
-        ical_event.ends(end.with_timezone(&Utc));
+        ical_event.starts(schedule.start.with_timezone(&Utc));
+        ical_event.ends(schedule.end.with_timezone(&Utc));
     }
 }
 
